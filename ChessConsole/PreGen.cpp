@@ -342,7 +342,7 @@ std::vector<BitBoard> PreGen::createOccupancies(const std::uint64_t mask, const 
 	for (std::uint64_t i{}; i < num_occupancies; i++)
 	{
 		BitBoard occupancy{};
-		std::size_t bit_position = 0; // Position of set bits in the mask
+		std::size_t bit_position{}; // Position of set bits in the mask
 
 		// Iterate over each square on the board
 		for (std::size_t square{}; square < MAX_BOARD_POSITIONS; square++)
