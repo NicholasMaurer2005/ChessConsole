@@ -5,7 +5,6 @@
 #include "ChessConstants.hpp"
 #include <string>
 #include <string_view>
-#include <array>
 #include "Move.h"
 
 struct State
