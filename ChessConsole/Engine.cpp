@@ -56,7 +56,6 @@ int Engine::minimax(const State& state, const std::uint32_t depth, int alpha, in
 		{
 			State new_state{ state };
 
-			//sort legal moves
 			if (makeMove(move, true, new_state))
 			{
 				anyLegalMoves = true;
@@ -120,7 +119,6 @@ int Engine::minimax(const State& state, const std::uint32_t depth, int alpha, in
 		{
 			State new_state{ state };
 
-			//sort legal moves
 			if (makeMove(move, true, new_state))
 			{
 				anyLegalMoves = true;
@@ -405,6 +403,7 @@ bool Engine::makeMove(const Move move, const bool all_moves, State& state) const
 		const bool enpassant = move.enpassant();
 		const bool castle = move.castle();
 
+		//if statements in most efficient order for least number of branching
 		if (castle)
 		{
 			if (state.whiteToMove())
