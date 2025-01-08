@@ -37,7 +37,7 @@ std::size_t State::enpassantSquare() const
 	return m_enpassantSquare;
 }
 
-bool State::testCastleRights(Castle C) const
+bool State::testCastleRights(const Castle C) const
 {
 	if (m_castleRights & C)
 	{

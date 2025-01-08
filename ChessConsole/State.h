@@ -33,7 +33,7 @@ public:
 
 	void setCastleRights(std::size_t square);
 
-	bool testCastleRights(Castle C) const;
+	bool testCastleRights(const Castle C) const;
 
 	std::size_t enpassantSquare() const;
 

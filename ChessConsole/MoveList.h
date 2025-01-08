@@ -20,17 +20,17 @@ public:
 
 	std::size_t count() const;
 
-	void addMove(Move move);
+	void addMove(const Move move);
 
 	void popMove(const std::size_t move_index);
 
-	bool findMove(const std::size_t source, std::size_t target, Move& move_out) const;
+	bool findMove(const std::size_t source, const std::size_t target, Move& move_out) const;
 
-	bool findCastleMove(std::size_t source) const;
+	bool findCastleMove(const std::size_t source) const;
 
 	void sortMoveList();
 
-	static bool move_compare(Move a, Move b);
+	static bool move_compare(const Move a, const Move b);
 
 	void printMoves() const;
 };

@@ -27,11 +27,11 @@ public:
 	BitBoard getRookAttack(const std::size_t square, const BitBoard occupancy) const;
 
 	template<Color C>
-	BitBoard getPawnAttack(std::size_t square) const;
+	BitBoard getPawnAttack(const std::size_t square) const;
 
-	BitBoard getKnightAttack(std::size_t square) const;
+	BitBoard getKnightAttack(const std::size_t square) const;
 
-	BitBoard getKingAttack(std::size_t square) const;
+	BitBoard getKingAttack(const std::size_t square) const;
 
 	BitBoard getPieceAttack(const std::size_t P, std::size_t square, const State& state);
 };

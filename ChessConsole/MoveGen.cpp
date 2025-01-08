@@ -639,17 +639,17 @@ BitBoard MoveGen::getRookAttack(const std::size_t square, const BitBoard occupan
 }
 
 template<Color C>
-BitBoard MoveGen::getPawnAttack(std::size_t square) const
+BitBoard MoveGen::getPawnAttack(const std::size_t square) const
 {
 	return m_preGen.pawnAttacks()[PreGen::indexPawnAttackTable(square, C)];
 }
 
-BitBoard MoveGen::getKnightAttack(std::size_t square) const
+BitBoard MoveGen::getKnightAttack(const std::size_t square) const
 {
 	return m_preGen.knightAttacks()[square];
 }
 
-BitBoard MoveGen::getKingAttack(std::size_t square) const
+BitBoard MoveGen::getKingAttack(const std::size_t square) const
 {
 	return m_preGen.kingAttacks()[square];
 }

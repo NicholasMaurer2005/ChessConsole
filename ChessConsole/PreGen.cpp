@@ -513,7 +513,7 @@ BitBoard PreGen::createSliderAttack(const std::size_t square, const BitBoard occ
 
 
 // Helper Functions
-void PreGen::printMasks(Piece P) const
+void PreGen::printMasks(const Piece P) const
 {
 	if (P == Piece::KNIGHT)
 	{
