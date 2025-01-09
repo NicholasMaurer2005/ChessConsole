@@ -17,11 +17,6 @@ std::size_t MoveList::count() const
 	return m_moves.size();
 }
 
-void MoveList::addMove(const Move move)
-{
-	m_moves.push_back(move);
-}
-
 void MoveList::sortMoveList()
 {
 	std::sort(m_moves.begin(), m_moves.end(), move_compare);

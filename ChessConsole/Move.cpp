@@ -28,7 +28,7 @@ Move::Move(const std::size_t square)
 }
 
 //double pawn push
-Move::Move(const std::size_t source, const std::size_t target, const bool temp) //arbitrary bool to call constructor
+Move::Move(const std::size_t source, const std::size_t target, const bool) //arbitrary bool to call constructor
 {
 	m_data = static_cast<uint32_t>(source) | (static_cast<std::uint32_t>(target) << target_shift) | (static_cast<std::uint32_t>(Piece::PAWN) << piece_shift) | (static_cast<std::uint32_t>(single_bit) << double_shift) | (0b101 << value_shift);
 }

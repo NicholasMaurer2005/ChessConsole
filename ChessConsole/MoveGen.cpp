@@ -31,20 +31,20 @@ void MoveGen::generateMoves(const State& state, MoveList& moveList)
 						//promotion
 						if (source_square >= a7 && source_square <= h7)
 						{
-							moveList.addMove(Move::createMove<MoveType::QUIET_PROMOTE, Piece::QUEEN>(source_square, target_square));
-							moveList.addMove(Move::createMove<MoveType::QUIET_PROMOTE, Piece::ROOK>(source_square, target_square));
-							moveList.addMove(Move::createMove<MoveType::QUIET_PROMOTE, Piece::BISHOP>(source_square, target_square));
-							moveList.addMove(Move::createMove<MoveType::QUIET_PROMOTE, Piece::KNIGHT>(source_square, target_square));
+							moveList.addMove<MoveType::QUIET_PROMOTE, Piece::QUEEN>(source_square, target_square);
+							moveList.addMove<MoveType::QUIET_PROMOTE, Piece::ROOK>(source_square, target_square);
+							moveList.addMove<MoveType::QUIET_PROMOTE, Piece::BISHOP>(source_square, target_square);
+							moveList.addMove<MoveType::QUIET_PROMOTE, Piece::KNIGHT>(source_square, target_square);
 						}
 						else
 						{
 							//one square
-							moveList.addMove(Move::createMove<MoveType::QUIET, Piece::PAWN>(source_square, target_square));
+							moveList.addMove<MoveType::QUIET, Piece::PAWN>(source_square, target_square);
 
 							//two square
 							if ((source_square >= a2 && source_square <= h2) && !state.occupancy()[Occupancy::BOTH].test(target_square - 8))
 							{
-								moveList.addMove(Move::createMove<MoveType::QUIET, Piece::PAWN>(source_square, target_square - 8));
+								moveList.addMove<MoveType::QUIET, Piece::PAWN>(source_square, target_square - 8);
 							}
 						}
 					}
@@ -60,17 +60,17 @@ void MoveGen::generateMoves(const State& state, MoveList& moveList)
 						if (source_square >= a7 && source_square <= h7)
 						{
 
-							moveList.addMove(Move::createMove<MoveType::PROMOTE, Piece::QUEEN>(source_square, attack_target));
-							moveList.addMove(Move::createMove<MoveType::PROMOTE, Piece::ROOK>(source_square, attack_target));
-							moveList.addMove(Move::createMove<MoveType::PROMOTE, Piece::BISHOP>(source_square, attack_target));
-							moveList.addMove(Move::createMove<MoveType::PROMOTE, Piece::KNIGHT>(source_square, attack_target));
+							moveList.addMove<MoveType::PROMOTE, Piece::QUEEN>(source_square, attack_target);
+							moveList.addMove<MoveType::PROMOTE, Piece::ROOK>(source_square, attack_target);
+							moveList.addMove<MoveType::PROMOTE, Piece::BISHOP>(source_square, attack_target);
+							moveList.addMove<MoveType::PROMOTE, Piece::KNIGHT>(source_square, attack_target);
 
 						}
 						else
 						{
 
 							//one square
-							moveList.addMove(Move::createMove<MoveType::CAPTURE, Piece::PAWN>(source_square, attack_target));
+							moveList.addMove<MoveType::CAPTURE, Piece::PAWN>(source_square, attack_target);
 
 						}
 						
@@ -85,7 +85,7 @@ void MoveGen::generateMoves(const State& state, MoveList& moveList)
 
 						if (enpassant_attack)
 						{
-							moveList.addMove(Move::createMove<MoveType::ENPASSANT, Piece::QUEEN>(source_square, state.enpassantSquare()));
+							moveList.addMove<MoveType::ENPASSANT, Piece::QUEEN>(source_square, state.enpassantSquare());
 						}
 					}
 
@@ -108,12 +108,12 @@ void MoveGen::generateMoves(const State& state, MoveList& moveList)
 						if (state.occupancy()[Color::BLACK].test(target_square))
 						{
 							//captures
-							moveList.addMove(Move::createMove<MoveType::CAPTURE, Piece::KNIGHT>(source_square, target_square));
+							moveList.addMove<MoveType::CAPTURE, Piece::KNIGHT>(source_square, target_square);
 						}
 						else
 						{
 							//quite
-							moveList.addMove(Move::createMove<MoveType::QUIET, Piece::KNIGHT>(source_square, target_square));
+							moveList.addMove<MoveType::QUIET, Piece::KNIGHT>(source_square, target_square);
 						}
 
 						knight_attacks.reset(target_square);
@@ -139,12 +139,12 @@ void MoveGen::generateMoves(const State& state, MoveList& moveList)
 						if (state.occupancy()[Color::BLACK].test(target_square))
 						{
 							//captures
-							moveList.addMove(Move::createMove<MoveType::CAPTURE, Piece::BISHOP>(source_square, target_square));
+							moveList.addMove<MoveType::CAPTURE, Piece::BISHOP>(source_square, target_square);
 						}
 						else
 						{
 							//quite
-							moveList.addMove(Move::createMove<MoveType::QUIET, Piece::BISHOP>(source_square, target_square));
+							moveList.addMove<MoveType::QUIET, Piece::BISHOP>(source_square, target_square);
 						}
 
 						bishop_attacks.reset(target_square);
@@ -170,12 +170,12 @@ void MoveGen::generateMoves(const State& state, MoveList& moveList)
 						if (state.occupancy()[Color::BLACK].test(target_square))
 						{
 							//captures
-							moveList.addMove(Move::createMove<MoveType::CAPTURE, Piece::ROOK>(source_square, target_square));
+							moveList.addMove<MoveType::CAPTURE, Piece::ROOK>(source_square, target_square);
 						}
 						else
 						{
 							//quite
-							moveList.addMove(Move::createMove<MoveType::QUIET, Piece::ROOK>(source_square, target_square));
+							moveList.addMove<MoveType::QUIET, Piece::ROOK>(source_square, target_square);
 						}
 
 						rook_attacks.reset(target_square);
@@ -203,12 +203,12 @@ void MoveGen::generateMoves(const State& state, MoveList& moveList)
 						if (state.occupancy()[Color::BLACK].test(target_square))
 						{
 							//captures
-							moveList.addMove(Move::createMove<MoveType::CAPTURE, Piece::QUEEN>(source_square, target_square));
+							moveList.addMove<MoveType::CAPTURE, Piece::QUEEN>(source_square, target_square);
 						}
 						else
 						{
 							//quite
-							moveList.addMove(Move::createMove<MoveType::QUIET, Piece::QUEEN>(source_square, target_square));
+							moveList.addMove<MoveType::QUIET, Piece::QUEEN>(source_square, target_square);
 						}
 
 						queen_attacks.reset(target_square);
@@ -234,12 +234,12 @@ void MoveGen::generateMoves(const State& state, MoveList& moveList)
 						if (state.occupancy()[Color::BLACK].test(target_square))
 						{
 							//captures
-							moveList.addMove(Move::createMove<MoveType::CAPTURE, Piece::KING>(source_square, target_square));
+							moveList.addMove<MoveType::CAPTURE, Piece::KING>(source_square, target_square);
 						}
 						else
 						{
 							//quite
-							moveList.addMove(Move::createMove<MoveType::QUIET, Piece::KING>(source_square, target_square));
+							moveList.addMove<MoveType::QUIET, Piece::KING>(source_square, target_square);
 						}
 
 						king_attacks.reset(target_square);
@@ -263,7 +263,7 @@ void MoveGen::generateMoves(const State& state, MoveList& moveList)
 						//not under attack
 						if (!isSquareAttacked(state, e1, Color::WHITE) && !isSquareAttacked(state, f1, Color::WHITE))
 						{
-							moveList.addMove(Move::createCastleMove<Castle::WK>());
+							moveList.addCastleMove<Castle::WK>();
 						}
 					}
 				}
@@ -277,7 +277,7 @@ void MoveGen::generateMoves(const State& state, MoveList& moveList)
 						//not under attack
 						if (!isSquareAttacked(state, e1, Color::WHITE) && !isSquareAttacked(state, c1, Color::WHITE))
 						{
-							moveList.addMove(Move::createCastleMove<Castle::WQ>());
+							moveList.addCastleMove<Castle::WQ>();
 						}
 					}
 				}
@@ -303,21 +303,21 @@ void MoveGen::generateMoves(const State& state, MoveList& moveList)
 						
 							if ((source_square >= a7 && source_square <= h7) && !state.occupancy()[Occupancy::BOTH].test(target_square + 8))
 							{
-								moveList.addMove(Move::createMove<QUIET_PROMOTE, BQUEEN>(source_square, target_square));
-								moveList.addMove(Move::createMove<QUIET_PROMOTE, BROOK>(source_square, target_square));
-								moveList.addMove(Move::createMove<QUIET_PROMOTE, BBISHOP>(source_square, target_square));
-								moveList.addMove(Move::createMove<QUIET_PROMOTE, BKNIGHT>(source_square, target_square));
+								moveList.addMove<QUIET_PROMOTE, BQUEEN>(source_square, target_square);
+								moveList.addMove<QUIET_PROMOTE, BROOK>(source_square, target_square);
+								moveList.addMove<QUIET_PROMOTE, BBISHOP>(source_square, target_square);
+								moveList.addMove<QUIET_PROMOTE, BKNIGHT>(source_square, target_square);
 							}
 						}
 						else
 						{
 							//one square
-							moveList.addMove(Move::createMove<QUIET, BPAWN>(source_square, target_square));
+							moveList.addMove<QUIET, BPAWN>(source_square, target_square);
 
 							//two square
 							if ((source_square >= a7 && source_square <= h7) && !state.occupancy()[Occupancy::BOTH].test(target_square + 8))
 							{
-								moveList.addMove(Move::createMove<QUIET, BPAWN>(source_square, target_square + 8));
+								moveList.addMove<QUIET, BPAWN>(source_square, target_square + 8);
 							}
 						}
 					}
@@ -332,15 +332,15 @@ void MoveGen::generateMoves(const State& state, MoveList& moveList)
 						//promotion
 						if (source_square >= a2 && source_square <= h2)
 						{
-							moveList.addMove(Move::createMove<MoveType::PROMOTE, Piece::BQUEEN>(source_square, attack_target));
-							moveList.addMove(Move::createMove<MoveType::PROMOTE, Piece::BROOK>(source_square, attack_target));
-							moveList.addMove(Move::createMove<MoveType::PROMOTE, Piece::BBISHOP>(source_square, attack_target));
-							moveList.addMove(Move::createMove<MoveType::PROMOTE, Piece::BKNIGHT>(source_square, attack_target));
+							moveList.addMove<MoveType::PROMOTE, Piece::BQUEEN>(source_square, attack_target);
+							moveList.addMove<MoveType::PROMOTE, Piece::BROOK>(source_square, attack_target);
+							moveList.addMove<MoveType::PROMOTE, Piece::BBISHOP>(source_square, attack_target);
+							moveList.addMove<MoveType::PROMOTE, Piece::BKNIGHT>(source_square, attack_target);
 						}
 						else
 						{
 							//one square
-							moveList.addMove(Move::createMove<MoveType::PROMOTE, Piece::BPAWN>(source_square, attack_target));
+							moveList.addMove<MoveType::PROMOTE, Piece::BPAWN>(source_square, attack_target);
 						}
 						
 						attacks.reset(attack_target);
@@ -354,7 +354,7 @@ void MoveGen::generateMoves(const State& state, MoveList& moveList)
 
 						if (enpassant_attack)
 						{
-							moveList.addMove(Move::createMove<MoveType::ENPASSANT, Piece::BPAWN>(source_square, state.enpassantSquare()));
+							moveList.addMove<MoveType::ENPASSANT, Piece::BPAWN>(source_square, state.enpassantSquare());
 						}
 					}
 
@@ -378,12 +378,12 @@ void MoveGen::generateMoves(const State& state, MoveList& moveList)
 						if (state.occupancy()[Color::WHITE].test(target_square))
 						{
 							//captures
-							moveList.addMove(Move::createMove<MoveType::CAPTURE, Piece::BKNIGHT>(source_square, target_square));
+							moveList.addMove<MoveType::CAPTURE, Piece::BKNIGHT>(source_square, target_square);
 						}
 						else
 						{
 							//quite
-							moveList.addMove(Move::createMove<MoveType::QUIET, Piece::BKNIGHT>(source_square, target_square));
+							moveList.addMove<MoveType::QUIET, Piece::BKNIGHT>(source_square, target_square);
 						}
 
 						knight_attacks.reset(target_square);
@@ -409,12 +409,12 @@ void MoveGen::generateMoves(const State& state, MoveList& moveList)
 						if (state.occupancy()[Color::WHITE].test(target_square))
 						{
 							//captures
-							moveList.addMove(Move::createMove<MoveType::CAPTURE, Piece::BBISHOP>(source_square, target_square));
+							moveList.addMove<MoveType::CAPTURE, Piece::BBISHOP>(source_square, target_square);
 						}
 						else
 						{
 							//quite
-							moveList.addMove(Move::createMove<MoveType::QUIET, Piece::BBISHOP>(source_square, target_square));
+							moveList.addMove<MoveType::QUIET, Piece::BBISHOP>(source_square, target_square);
 						}
 
 						bishop_attacks.reset(target_square);
@@ -440,12 +440,12 @@ void MoveGen::generateMoves(const State& state, MoveList& moveList)
 						if (state.occupancy()[Color::WHITE].test(target_square))
 						{
 							//captures
-							moveList.addMove(Move::createMove<MoveType::CAPTURE, Piece::BROOK>(source_square, target_square));
+							moveList.addMove<MoveType::CAPTURE, Piece::BROOK>(source_square, target_square);
 						}
 						else
 						{
 							//quite
-							moveList.addMove(Move::createMove<MoveType::QUIET, Piece::BROOK>(source_square, target_square));
+							moveList.addMove<MoveType::QUIET, Piece::BROOK>(source_square, target_square);
 						}
 
 						rook_attacks.reset(target_square);
@@ -473,12 +473,12 @@ void MoveGen::generateMoves(const State& state, MoveList& moveList)
 						if (state.occupancy()[Color::WHITE].test(target_square))
 						{
 							//captures
-							moveList.addMove(Move::createMove<MoveType::CAPTURE, Piece::BQUEEN>(source_square, target_square));
+							moveList.addMove<MoveType::CAPTURE, Piece::BQUEEN>(source_square, target_square);
 						}
 						else
 						{
 							//quite
-							moveList.addMove(Move::createMove<MoveType::QUIET, Piece::BQUEEN>(source_square, target_square));
+							moveList.addMove<MoveType::QUIET, Piece::BQUEEN>(source_square, target_square);
 						}
 
 						queen_attacks.reset(target_square);
@@ -504,12 +504,12 @@ void MoveGen::generateMoves(const State& state, MoveList& moveList)
 						if (state.occupancy()[Color::WHITE].test(target_square))
 						{
 							//captures
-							moveList.addMove(Move::createMove<MoveType::CAPTURE, Piece::BKING>(source_square, target_square));
+							moveList.addMove<MoveType::CAPTURE, Piece::BKING>(source_square, target_square);
 						}
 						else
 						{
 							//quite
-							moveList.addMove(Move::createMove<MoveType::QUIET, Piece::BKING>(source_square, target_square));
+							moveList.addMove<MoveType::QUIET, Piece::BKING>(source_square, target_square);
 						}
 
 						king_attacks.reset(target_square);
@@ -533,7 +533,7 @@ void MoveGen::generateMoves(const State& state, MoveList& moveList)
 						//not under attack
 						if (!isSquareAttacked(state, e8, Color::BLACK) && !isSquareAttacked(state, f8, Color::BLACK))
 						{
-							moveList.addMove(Move::createCastleMove<Castle::BK>());
+							moveList.addCastleMove<Castle::BK>();
 						}
 					}
 				}
@@ -547,7 +547,7 @@ void MoveGen::generateMoves(const State& state, MoveList& moveList)
 						//not under attack
 						if (!isSquareAttacked(state, e8, Color::BLACK) && !isSquareAttacked(state, c8, Color::BLACK))
 						{
-							moveList.addMove(Move::createCastleMove<Castle::BQ>());
+							moveList.addCastleMove<Castle::BQ>();
 						}
 					}
 				}

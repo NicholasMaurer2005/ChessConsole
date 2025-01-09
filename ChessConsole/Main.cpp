@@ -120,5 +120,5 @@ of that game I cant seem to. I think it is something wrong with castling because
 int main()
 {
 	Engine engine{ start_position_fen };
-	engine.step(true, false, 8);
+	engine.step(true, false, 8); 
 }

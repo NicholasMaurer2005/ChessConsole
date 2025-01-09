@@ -29,7 +29,7 @@ private:
 	std::uint32_t m_data;
 
 public:
-	//pawn promoted PIECE FLAG FIRST CAPTURE FLAG SECOND FOR MULTIPLE DEFINITIONS
+	//pawn promoted         PIECE FLAG FIRST CAPTURE FLAG SECOND FOR MULTIPLE DEFINITIONS
 	Move(const std::size_t source, const std::size_t target, const Piece P, const bool capture);
 
 	//enpassant
@@ -39,7 +39,7 @@ public:
 	Move(const std::size_t target);
 
 	//double pawn push
-	Move(const std::size_t source, const std::size_t target, const bool temp); //arbitrary bool to call constructor
+	Move(const std::size_t source, const std::size_t target, const bool); //arbitrary bool to call constructor
 	 
 	//other         CAPTURE FLAG FIRST PIECE FLAG SECOND FOR MULTIPLE DEFINITIONS
 	Move(const std::size_t source, const std::size_t target, const bool capture, const Piece P, const std::uint32_t value);
@@ -68,47 +68,6 @@ public:
 	std::uint32_t value() const;
 
 	void print() const;
-
-	template<MoveType M, Piece P>
-	static Move createMove(const std::size_t source, const std::size_t target)
-	{
-		if constexpr (M == MoveType::CAPTURE)
-		{
-			if constexpr (P == Piece::PAWN)
-			{
-				return Move(source, target, true, P, 0b010);
-			}
-			else
-			{
-				return Move(source, target, true, P, 0b011);
-			}
-		}
-
-		if constexpr (M == MoveType::QUIET)
-		{
-			return Move(source, target, false, P, 0b111);
-		}
-
-		if constexpr (M == MoveType::QUIET_PROMOTE)
-		{
-			return Move(source, target, P, false);
-		}
-
-		if constexpr (M == MoveType::PROMOTE)
-		{
-			return Move(source, target, P, true);
-		}
-
-		if constexpr (M == MoveType::ENPASSANT)
-		{
-			return Move(source, target);
-		}
-
-		if constexpr (M == MoveType::DOUBLE_PAWN)
-		{
-			return Move(source, target, true);
-		}
-	}
 
 	template <Castle C>
 	static Move createCastleMove()
