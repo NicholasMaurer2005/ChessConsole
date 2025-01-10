@@ -60,7 +60,7 @@ fewer possible moves.It can be changed by altering "depth" in the engine.step() 
 
 
 /*
-HOW TO USE :
+HOW TO USE:
 
 Engine is created and given a FEN, but I didn't fully implement FEN notation so instead It can only read the first part of the FEN 
 explaining the board positions.For example, the starting position : rnbqkbnr / pppppppp / 8 / 8 / 8 / 8 / PPPPPPPP / RNBQKBNR
