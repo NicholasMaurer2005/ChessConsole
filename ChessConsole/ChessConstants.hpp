@@ -24,11 +24,27 @@ constexpr std::uint32_t MAX_MINIMAX_DEPTH							= 5;
 
 constexpr bool USING_PREGENERATED_MAGICS = true;
 constexpr bool PRINT_GENERATED_MAGICS = false;
+constexpr bool ENGINE_PLAY_ITSELF = false;
 
 const std::string start_position_fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
 const std::string tricky_position_fen = "r3k2r/p11pqpb1/bn2pnp1/2pPN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R";
 
+//most valuable victim - least valuable aggressor [capturing piece][captured piece]
+constexpr std::array<std::array<std::uint8_t, PIECE_COUNT>, PIECE_COUNT> mvv_lva = {{
+	{{ 11, 21, 31, 41, 51, 61,  11, 21, 31, 41, 51, 61, }},
+	{{ 12, 22, 32, 42, 52, 62,  12, 22, 32, 42, 52, 62, }},
+	{{ 13, 23, 33, 43, 53, 63,  13, 23, 33, 43, 53, 63, }},
+	{{ 14, 24, 34, 44, 54, 64,  14, 24, 34, 44, 54, 64, }},
+	{{ 15, 25, 35, 45, 55, 65,  15, 25, 35, 45, 55, 65, }},
+	{{ 16, 26, 36, 46, 56, 66,  16, 26, 36, 46, 56, 66, }},
 
+	{{ 11, 21, 31, 41, 51, 61,  11, 21, 31, 41, 51, 61, }},
+	{{ 12, 22, 32, 42, 52, 62,  12, 22, 32, 42, 52, 62, }},
+	{{ 13, 23, 33, 43, 53, 63,  13, 23, 33, 43, 53, 63, }},
+	{{ 14, 24, 34, 44, 54, 64,  14, 24, 34, 44, 54, 64, }},
+	{{ 15, 25, 35, 45, 55, 65,  15, 25, 35, 45, 55, 65, }},
+	{{ 16, 26, 36, 46, 56, 66,  16, 26, 36, 46, 56, 66, }}
+}};
 
 constexpr std::array<std::size_t, 128> create_char_to_piece()
 {

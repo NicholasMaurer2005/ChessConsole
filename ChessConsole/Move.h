@@ -21,7 +21,7 @@ constexpr std::uint32_t enpassant_mask       { 0b0000000000000000010000000000000
 constexpr std::uint32_t castle_mask          { 0b00000000000000001000000000000000 };
 constexpr std::uint32_t piece_mask           { 0b00000000000011110000000000000000 };
 constexpr std::uint32_t double_mask          { 0b00000000000100000000000000000000 };
-constexpr std::uint32_t value_mask           { 0b00000000111000000000000000000000 };
+constexpr std::uint32_t value_mask           { 0b00011111111000000000000000000000 };
 
 struct Move
 {

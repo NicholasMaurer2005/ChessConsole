@@ -120,5 +120,5 @@ of that game I can't seem to. I think there is something wrong with castling bec
 int main()
 {
 	Engine engine{ start_position_fen };
-	engine.step(false, false, 8); 
+	engine.step(false, false, 6); 
 }

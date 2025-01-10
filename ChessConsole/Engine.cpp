@@ -192,27 +192,37 @@ void Engine::step(const bool engine_side_white, const bool flip_board, const std
 		}
 		else
 		{
-			//player move
-			MoveList list;
-			m_moveGen.generateMoves(m_state, list);
-
-			Move move;
-			while (true)
+			if constexpr (ENGINE_PLAY_ITSELF)
 			{
-				if (inputAndParseMove(list, move))
+				//engine move
+				std::cout << "thinking" << std::endl;
+				minimax(m_state, m_depth, INT_MIN, INT_MAX);
+				makeMove(m_bestMove, true, m_state);
+			}
+			else
+			{
+				//player move
+				MoveList list;
+				m_moveGen.generateMoves(m_state, list);
+
+				Move move;
+				while (true)
 				{
-					State new_state{ m_state };
-					new_state.printBoard(flip_board);
-					move.print();
-
-					if (makeMove(move, true, new_state))
+					if (inputAndParseMove(list, move))
 					{
-						m_state = new_state;
-						break;
-					}
-				}
+						State new_state{ m_state };
+						new_state.printBoard(flip_board);
+						move.print();
 
-				std::cout << "move does not exist" << std::endl;
+						if (makeMove(move, true, new_state))
+						{
+							m_state = new_state;
+							break;
+						}
+					}
+
+					std::cout << "move does not exist" << std::endl;
+				}
 			}
 		}
 
