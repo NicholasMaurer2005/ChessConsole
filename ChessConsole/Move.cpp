@@ -79,6 +79,7 @@ Move::Move(const std::size_t source, const std::size_t target, const Piece piece
 			| (static_cast<std::uint32_t>(piece) << piece_shift)
 			| (static_cast<std::uint32_t>(single_bit) << capture_shift)
 			| (mvv_lva[piece][captured_piece] << value_shift);
+
 	}
 }
 

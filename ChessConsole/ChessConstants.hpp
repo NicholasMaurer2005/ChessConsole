@@ -46,26 +46,42 @@ constexpr std::array<std::array<std::uint8_t, PIECE_COUNT>, PIECE_COUNT> mvv_lva
 	{{ 11, 21, 31, 41, 51, 61,  11, 21, 31, 41, 51, 61, }}
 }};
 
+enum Piece {
+	PAWN = 0,
+	KNIGHT = 1,
+	BISHOP = 2,
+	ROOK = 3,
+	QUEEN = 4,
+	KING = 5,
+	BPAWN = 6,
+	BKNIGHT = 7,
+	BBISHOP = 8,
+	BROOK = 9,
+	BQUEEN = 10,
+	BKING = 11,
+	NO_PIECE = 12
+};
+
 constexpr std::array<std::size_t, 128> create_char_to_piece()
 {
 	std::array< std::size_t, 128> table = { 0 };
-	table['P'] = 0;
-	table['N'] = 1;
-	table['K'] = 2;
-	table['B'] = 3;
-	table['R'] = 4;
-	table['Q'] = 5;
-	table['p'] = 6;
-	table['n'] = 7;
-	table['k'] = 8;
-	table['b'] = 9;
-	table['r'] = 10;
-	table['q'] = 11;
+	table['P'] = Piece::PAWN;
+	table['N'] = Piece::KNIGHT;
+	table['B'] = Piece::BISHOP;
+	table['R'] = Piece::ROOK;
+	table['Q'] = Piece::QUEEN;
+	table['K'] = Piece::KING;
+	table['p'] = Piece::BPAWN;
+	table['n'] = Piece::BKNIGHT;
+	table['b'] = Piece::BBISHOP;
+	table['r'] = Piece::BROOK;
+	table['q'] = Piece::BQUEEN;
+	table['k'] = Piece::BKING;
 	return table;
 }
 constexpr std::array<std::size_t, 128> char_to_piece = create_char_to_piece();
 
-constexpr std::array<char, PIECE_COUNT> piece_to_char = { 'P', 'N', 'K', 'B', 'R', 'Q', 'X', 'n', 'k', 'b', 'r', 'q' };
+constexpr std::array<char, PIECE_COUNT> piece_to_char = { 'P', 'N', 'B', 'R', 'Q', 'K', 'X', 'n', 'b', 'r', 'q', 'k' };
 
 constexpr std::array<std::string_view, 64> index_to_rf = {
 		"a8"sv, "b8"sv, "c8"sv, "d8"sv, "e8"sv, "f8"sv, "g8"sv, "h8"sv,
@@ -114,22 +130,6 @@ enum Castle {
 enum Color {
 	WHITE = 0,
 	BLACK = 1
-};
-
-enum Piece {
-	PAWN = 0,
-	KNIGHT = 1,
-	BISHOP = 2,
-	ROOK = 3,
-	QUEEN = 4,
-	KING = 5,
-	BPAWN = 6,
-	BKNIGHT = 7,
-	BBISHOP = 8,
-	BROOK = 9,
-	BQUEEN = 10,
-	BKING = 11,
-	NO_PIECE = 12
 };
 
 enum Occupancy {

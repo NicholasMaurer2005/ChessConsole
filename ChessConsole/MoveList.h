@@ -58,13 +58,13 @@ public:
 		if constexpr (M == MoveType::QUIET_PROMOTE)
 		{
 			//quiet promote
-			m_moves.emplace_back(source, target, Piece::PAWN, Piece::NO_PIECE, false);
+			m_moves.emplace_back(source, target, P, Piece::NO_PIECE, false);
 		}
 
 		if constexpr (M == MoveType::PROMOTE)
 		{
 			//capture and promote
-			m_moves.emplace_back(source, target, Piece::PAWN, captured_piece, true);
+			m_moves.emplace_back(source, target, P, captured_piece, true);
 		}
 
 		if constexpr (M == MoveType::ENPASSANT)

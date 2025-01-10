@@ -71,5 +71,5 @@ void MoveList::printMoves() const
 
 bool MoveList::move_compare(const Move a, const Move b)
 {
-	return a.value() < b.value();
+	return a.value() > b.value();
 }

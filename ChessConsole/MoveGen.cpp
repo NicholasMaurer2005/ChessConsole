@@ -44,7 +44,7 @@ void MoveGen::generateMoves(const State& state, MoveList& moveList)
 							//two square
 							if ((source_square >= a2 && source_square <= h2) && !state.occupancy()[Occupancy::BOTH].test(target_square - 8))
 							{
-								moveList.addMove<MoveType::QUIET, Piece::PAWN>(source_square, target_square - 8, Piece::NO_PIECE);
+								moveList.addMove<MoveType::DOUBLE_PAWN, Piece::PAWN>(source_square, target_square - 8, Piece::NO_PIECE);
 							}
 						}
 					}
@@ -321,7 +321,7 @@ void MoveGen::generateMoves(const State& state, MoveList& moveList)
 							//two square
 							if ((source_square >= a7 && source_square <= h7) && !state.occupancy()[Occupancy::BOTH].test(target_square + 8))
 							{
-								moveList.addMove<QUIET, BPAWN>(source_square, target_square + 8, Piece::NO_PIECE);//TODO: maybe switch to variable because add twice
+								moveList.addMove<MoveType::DOUBLE_PAWN, Piece::BPAWN>(source_square, target_square + 8, Piece::NO_PIECE);//TODO: maybe switch to variable because add twice
 							}
 						}
 					}
@@ -345,7 +345,7 @@ void MoveGen::generateMoves(const State& state, MoveList& moveList)
 						else
 						{
 							//one square
-							moveList.addMove<MoveType::PROMOTE, Piece::BPAWN>(source_square, attack_target, target_piece);
+							moveList.addMove<MoveType::CAPTURE, Piece::BPAWN>(source_square, attack_target, target_piece);
 						}
 						
 						attacks.reset(attack_target);

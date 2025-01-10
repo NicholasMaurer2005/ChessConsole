@@ -39,7 +39,7 @@ std::size_t State::enpassantSquare() const
 
 Piece State::testPieceType(const std::size_t square) const
 {
-	for (std::size_t piece{}; piece <= PIECE_COUNT; piece++)
+	for (std::size_t piece{}; piece < PIECE_COUNT; piece++)
 	{
 		if (m_positions[piece].test(square))
 		{
