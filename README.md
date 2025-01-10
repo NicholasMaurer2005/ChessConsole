@@ -9,30 +9,6 @@ making lots of optimizations and taking advantage of object-oriented programming
 and memory-efficient. For example, the board is represented in just twelve std::uint64_t's, one for every piece, where 
 each bit represents a piece on the board, picture an 8x8 grid of bits:
 
-'''
-8    0 0 0 0 0 0 0 0
-7    0 0 0 0 0 0 0 0
-6    0 0 0 0 0 0 0 0
-5    0 0 0 0 0 0 0 0
-4    0 0 0 0 0 0 0 0
-3    0 0 0 0 0 0 0 0
-2    0 0 0 0 0 0 0 0
-1    0 0 0 0 0 0 0 0
-
-     A B C D E F G H
-
-0   r n b q k b n r
-1   p p p p p p p p
-2   0 0 0 0 0 0 0 0
-3   0 0 0 0 0 0 0 0
-2   0 0 0 0 0 0 0 0
-1   0 0 0 0 0 0 0 0
-6   P P P P P P P P
-7   R K B Q K B K R
-
-    A B C D E F G H
-'''
-
 The engine also uses pre-generated moves. Instead of calculating where certain pieces can move on the fly, all possible 
 moves are calculated when the program starts and stored in memory. Slider pieces use a system called "magic numbers", 
 where the current board occupancy is hashed and used to look up an index for the available slots for that piece to move 
