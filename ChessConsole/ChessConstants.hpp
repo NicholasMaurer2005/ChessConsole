@@ -22,7 +22,7 @@ constexpr std::size_t   PIECE_COUNT									= 12;
 constexpr std::size_t   MAX_MOVELIST_COUNT							= 256;
 constexpr std::uint32_t MAX_MINIMAX_DEPTH							= 5;
 
-constexpr bool USING_PREGENERATED_MAGICS = false;
+constexpr bool USING_PREGENERATED_MAGICS = true;
 constexpr bool PRINT_GENERATED_MAGICS = false;
 
 const std::string start_position_fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
