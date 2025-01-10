@@ -29,20 +29,20 @@ private:
 	std::uint32_t m_data;
 
 public:
-	//pawn promoted         PIECE FLAG FIRST CAPTURE FLAG SECOND FOR MULTIPLE DEFINITIONS
-	Move(const std::size_t source, const std::size_t target, const Piece P, const bool capture);
+	//pawn promoted         
+	Move(const std::size_t source, const std::size_t target, const Piece piece, const Piece capture_piece, const bool capture);
 
 	//enpassant
-	Move(const std::size_t source, const std::size_t target);
+	Move(const std::size_t source, const std::size_t target, const Piece captured_piece);
 
 	//castle
 	Move(const std::size_t target);
 
 	//double pawn push
-	Move(const std::size_t source, const std::size_t target, const bool); //arbitrary bool to call constructor
-	 
-	//other         CAPTURE FLAG FIRST PIECE FLAG SECOND FOR MULTIPLE DEFINITIONS
-	Move(const std::size_t source, const std::size_t target, const bool capture, const Piece P, const std::uint32_t value);
+	Move(const std::size_t source, const std::size_t target); 
+
+	//other         
+	Move(const std::size_t source, const std::size_t target, const Piece piece, const Piece captured_piece);
 
 	//default
 	Move();

@@ -48,7 +48,7 @@ public:
 
 	static std::size_t squareToIndex(std::string_view square);
 
-	bool makeMove(const Move move, const bool all_moves, State& state) const;
+	bool makeMove(const Move move, State& state) const;
 
 	bool kingInCheck(const State& state) const;
 };

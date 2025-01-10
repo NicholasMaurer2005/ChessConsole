@@ -61,7 +61,7 @@ int Engine::minimax(const State& state, const std::uint32_t depth, int alpha, in
 		{
 			State new_state{ state };
 
-			if (makeMove(move, true, new_state))
+			if (makeMove(move, new_state))
 			{
 				anyLegalMoves = true;
 
@@ -124,7 +124,7 @@ int Engine::minimax(const State& state, const std::uint32_t depth, int alpha, in
 		{
 			State new_state{ state };
 
-			if (makeMove(move, true, new_state))
+			if (makeMove(move, new_state))
 			{
 				anyLegalMoves = true;
 
@@ -188,7 +188,7 @@ void Engine::step(const bool engine_side_white, const bool flip_board, const std
 			//engine move
 			std::cout << "thinking" << std::endl;
 			minimax(m_state, m_depth, INT_MIN, INT_MAX);
-			makeMove(m_bestMove, true, m_state);
+			makeMove(m_bestMove, m_state);
 		}
 		else
 		{
@@ -197,7 +197,7 @@ void Engine::step(const bool engine_side_white, const bool flip_board, const std
 				//engine move
 				std::cout << "thinking" << std::endl;
 				minimax(m_state, m_depth, INT_MIN, INT_MAX);
-				makeMove(m_bestMove, true, m_state);
+				makeMove(m_bestMove, m_state);
 			}
 			else
 			{
@@ -214,7 +214,7 @@ void Engine::step(const bool engine_side_white, const bool flip_board, const std
 						new_state.printBoard(flip_board);
 						move.print();
 
-						if (makeMove(move, true, new_state))
+						if (makeMove(move, new_state))
 						{
 							m_state = new_state;
 							break;
@@ -402,115 +402,106 @@ std::size_t Engine::squareToIndex(std::string_view square)
 	return rank * RANK_MAX + file;
 }
 
-bool Engine::makeMove(const Move move, const bool all_moves, State& state) const
+bool Engine::makeMove(const Move move, State& state) const
 {
 	state.setEnpassantSquare(no_sqr);
 
-	if (all_moves)
+	//unpack
+	const std::size_t source = move.source();
+	const std::size_t target = move.target();
+	const Piece piece = move.piece();
+	const bool promoted = move.promoted();
+	const bool capture = move.capture();
+	const bool double_pawn = move.doublePawnPush();
+	const bool enpassant = move.enpassant();
+	const bool castle = move.castle();
+
+	//if statements in most efficient order for least number of branching
+	if (castle)
 	{
-		//unpack
-		const std::size_t source = move.source();
-		const std::size_t target = move.target();
-		const Piece piece = move.piece();
-		const bool promoted = move.promoted();
-		const bool capture = move.capture();
-		const bool double_pawn = move.doublePawnPush();
-		const bool enpassant = move.enpassant();
-		const bool castle = move.castle();
-
-		//if statements in most efficient order for least number of branching
-		if (castle)
+		if (state.whiteToMove())
 		{
-			if (state.whiteToMove())
-			{
-				state.moveQuiet(KING, e1, source);
+			state.moveQuiet(KING, e1, source);
 
-				if (source == g1)
-				{
-					state.moveQuiet(ROOK, h1, f1);
-					state.setCastleRights(h1);
-				}
-				else
-				{
-					state.moveQuiet(ROOK, a1, d1);
-					state.setCastleRights(a1);
-				}
+			if (source == g1)
+			{
+				state.moveQuiet(ROOK, h1, f1);
+				state.setCastleRights(h1);
 			}
 			else
 			{
-				state.moveQuiet(BKING, e8, source);
-
-				if (source == g8)
-				{
-					state.moveQuiet(BROOK, h8, f8);
-					state.setCastleRights(h8);
-				}
-				else
-				{
-					state.moveQuiet(BROOK, a8, d8);
-					state.setCastleRights(a8);
-				}
+				state.moveQuiet(ROOK, a1, d1);
+				state.setCastleRights(a1);
 			}
 		}
 		else
 		{
-			state.setCastleRights(source);
-			state.setCastleRights(target);
+			state.moveQuiet(BKING, e8, source);
 
-			//captures
-			if (capture)
+			if (source == g8)
 			{
-				if (promoted)
-				{
-					state.popPiece(state.whiteToMove() ? Piece::PAWN : Piece::BPAWN, source);
-					state.popSquare(target);
-					state.setPiece(piece, target);
-				}
-				else if (enpassant)
-				{
-					state.moveCapture(Piece::PAWN, source, target);
-				}
-				else
-				{
-					state.moveCapture(piece, source, target);
-				}
+				state.moveQuiet(BROOK, h8, f8);
+				state.setCastleRights(h8);
 			}
-			//quiets
 			else
 			{
-				if (double_pawn)
-				{
-					state.moveQuiet(state.whiteToMove() ? PAWN : BPAWN, source, target);
-					state.setEnpassantSquare(state.whiteToMove() ? source - 8 : source + 8);
-				}
-				else if (promoted)
-				{
-					state.popPiece(state.whiteToMove() ? Piece::PAWN : Piece::BPAWN, source);
-					state.setPiece(piece, target);
-				}
-				else
-				{
-					state.moveQuiet(piece, source, target);
-				}
+				state.moveQuiet(BROOK, a8, d8);
+				state.setCastleRights(a8);
 			}
-		}
-
-		if (kingInCheck(state))
-		{
-			return false;
-		}
-		else
-		{
-			return true;
 		}
 	}
 	else
 	{
-		if (move.capture())
+		state.setCastleRights(source);
+		state.setCastleRights(target);
+
+		//captures
+		if (capture)
 		{
-			makeMove(move, true, state);
+			if (promoted)
+			{
+				state.popPiece(state.whiteToMove() ? Piece::PAWN : Piece::BPAWN, source);
+				state.popSquare(target);
+				state.setPiece(piece, target);
+			}
+			else if (enpassant)
+			{
+				state.moveCapture(Piece::PAWN, source, target);
+			}
+			else
+			{
+				state.moveCapture(piece, source, target);
+			}
+		}
+		//quiets
+		else
+		{
+			if (double_pawn)
+			{
+				state.moveQuiet(state.whiteToMove() ? PAWN : BPAWN, source, target);
+				state.setEnpassantSquare(state.whiteToMove() ? source - 8 : source + 8);
+			}
+			else if (promoted)
+			{
+				state.popPiece(state.whiteToMove() ? Piece::PAWN : Piece::BPAWN, source);
+				state.setPiece(piece, target);
+			}
+			else
+			{
+				state.moveQuiet(piece, source, target);
+			}
 		}
 	}
+
+	if (kingInCheck(state))
+	{
+		return false;
+	}
+	else
+	{
+		return true;
+	}
+	
 }
 
 

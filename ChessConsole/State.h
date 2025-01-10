@@ -28,6 +28,8 @@ public:
 
 	const std::array<BitBoard, 3>& occupancy() const;
 
+	Piece testPieceType(const std::size_t square) const;
+
 	std::uint8_t castleRights() const;
 
 	void setCastleRights(std::size_t square);

@@ -37,16 +37,22 @@ std::size_t State::enpassantSquare() const
 	return m_enpassantSquare;
 }
 
+Piece State::testPieceType(const std::size_t square) const
+{
+	for (std::size_t piece{}; piece <= PIECE_COUNT; piece++)
+	{
+		if (m_positions[piece].test(square))
+		{
+			return static_cast<Piece>(piece);
+		}
+	}
+
+	return Piece::NO_PIECE;
+}
+
 bool State::testCastleRights(const Castle C) const
 {
-	if (m_castleRights & C)
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	return static_cast<bool>(m_castleRights & C);
 }
 
 void State::setEnpassantSquare(const std::size_t square)

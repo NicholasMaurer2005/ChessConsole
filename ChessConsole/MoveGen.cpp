@@ -31,20 +31,20 @@ void MoveGen::generateMoves(const State& state, MoveList& moveList)
 						//promotion
 						if (source_square >= a7 && source_square <= h7)
 						{
-							moveList.addMove<MoveType::QUIET_PROMOTE, Piece::QUEEN>(source_square, target_square);
-							moveList.addMove<MoveType::QUIET_PROMOTE, Piece::ROOK>(source_square, target_square);
-							moveList.addMove<MoveType::QUIET_PROMOTE, Piece::BISHOP>(source_square, target_square);
-							moveList.addMove<MoveType::QUIET_PROMOTE, Piece::KNIGHT>(source_square, target_square);
+							moveList.addMove<MoveType::QUIET_PROMOTE, Piece::QUEEN>(source_square, target_square, Piece::NO_PIECE);
+							moveList.addMove<MoveType::QUIET_PROMOTE, Piece::ROOK>(source_square, target_square, Piece::NO_PIECE);
+							moveList.addMove<MoveType::QUIET_PROMOTE, Piece::BISHOP>(source_square, target_square, Piece::NO_PIECE);
+							moveList.addMove<MoveType::QUIET_PROMOTE, Piece::KNIGHT>(source_square, target_square, Piece::NO_PIECE);
 						}
 						else
 						{
 							//one square
-							moveList.addMove<MoveType::QUIET, Piece::PAWN>(source_square, target_square);
+							moveList.addMove<MoveType::QUIET, Piece::PAWN>(source_square, target_square, Piece::NO_PIECE);
 
 							//two square
 							if ((source_square >= a2 && source_square <= h2) && !state.occupancy()[Occupancy::BOTH].test(target_square - 8))
 							{
-								moveList.addMove<MoveType::QUIET, Piece::PAWN>(source_square, target_square - 8);
+								moveList.addMove<MoveType::QUIET, Piece::PAWN>(source_square, target_square - 8, Piece::NO_PIECE);
 							}
 						}
 					}
@@ -54,23 +54,23 @@ void MoveGen::generateMoves(const State& state, MoveList& moveList)
 
 					while (attacks.board())
 					{
-						const std::size_t attack_target = attacks.find_1lsb();
+						const std::size_t attack_target{ attacks.find_1lsb() };
+						const Piece target_piece{ state.testPieceType(attack_target) };
 
-						//promotion
 						if (source_square >= a7 && source_square <= h7)
 						{
-
-							moveList.addMove<MoveType::PROMOTE, Piece::QUEEN>(source_square, attack_target);
-							moveList.addMove<MoveType::PROMOTE, Piece::ROOK>(source_square, attack_target);
-							moveList.addMove<MoveType::PROMOTE, Piece::BISHOP>(source_square, attack_target);
-							moveList.addMove<MoveType::PROMOTE, Piece::KNIGHT>(source_square, attack_target);
+							//promotion
+							moveList.addMove<MoveType::PROMOTE, Piece::QUEEN>(source_square, attack_target, target_piece);
+							moveList.addMove<MoveType::PROMOTE, Piece::ROOK>(source_square, attack_target, target_piece);
+							moveList.addMove<MoveType::PROMOTE, Piece::BISHOP>(source_square, attack_target, target_piece);
+							moveList.addMove<MoveType::PROMOTE, Piece::KNIGHT>(source_square, attack_target, target_piece);
 
 						}
 						else
 						{
 
-							//one square
-							moveList.addMove<MoveType::CAPTURE, Piece::PAWN>(source_square, attack_target);
+							//non promote
+							moveList.addMove<MoveType::CAPTURE, Piece::PAWN>(source_square, attack_target, target_piece);
 
 						}
 						
@@ -80,12 +80,12 @@ void MoveGen::generateMoves(const State& state, MoveList& moveList)
 					//enpessant
 					if (state.enpassantSquare() != no_sqr)
 					{
-						const BitBoard pawn_attack = m_preGen.pawnAttacks()[Color::WHITE][source_square];
-						const bool enpassant_attack = pawn_attack.test(state.enpassantSquare());
+						const BitBoard pawn_attack{ m_preGen.pawnAttacks()[Color::WHITE][source_square] };
+						const bool enpassant_attack{ pawn_attack.test(state.enpassantSquare()) };
 
 						if (enpassant_attack)
 						{
-							moveList.addMove<MoveType::ENPASSANT, Piece::QUEEN>(source_square, state.enpassantSquare());
+							moveList.addMove<MoveType::ENPASSANT, Piece::PAWN>(source_square, state.enpassantSquare(), Piece::PAWN);
 						}
 					}
 
@@ -103,17 +103,18 @@ void MoveGen::generateMoves(const State& state, MoveList& moveList)
 
 					while (knight_attacks.board())
 					{
-						const std::size_t target_square = knight_attacks.find_1lsb();
+						const std::size_t target_square{ knight_attacks.find_1lsb() };
 
 						if (state.occupancy()[Color::BLACK].test(target_square))
 						{
 							//captures
-							moveList.addMove<MoveType::CAPTURE, Piece::KNIGHT>(source_square, target_square);
+							const Piece target_piece{ state.testPieceType(target_square) };
+							moveList.addMove<MoveType::CAPTURE, Piece::KNIGHT>(source_square, target_square, target_piece);
 						}
 						else
 						{
 							//quite
-							moveList.addMove<MoveType::QUIET, Piece::KNIGHT>(source_square, target_square);
+							moveList.addMove<MoveType::QUIET, Piece::KNIGHT>(source_square, target_square, Piece::NO_PIECE);
 						}
 
 						knight_attacks.reset(target_square);
@@ -133,18 +134,18 @@ void MoveGen::generateMoves(const State& state, MoveList& moveList)
 
 					while (bishop_attacks.board())
 					{
-						const std::size_t target_square = bishop_attacks.find_1lsb();
-
+						const std::size_t target_square{ bishop_attacks.find_1lsb() };
 
 						if (state.occupancy()[Color::BLACK].test(target_square))
 						{
 							//captures
-							moveList.addMove<MoveType::CAPTURE, Piece::BISHOP>(source_square, target_square);
+							const Piece target_piece{ state.testPieceType(target_square) };
+							moveList.addMove<MoveType::CAPTURE, Piece::BISHOP>(source_square, target_square, target_piece);
 						}
 						else
 						{
 							//quite
-							moveList.addMove<MoveType::QUIET, Piece::BISHOP>(source_square, target_square);
+							moveList.addMove<MoveType::QUIET, Piece::BISHOP>(source_square, target_square, Piece::NO_PIECE);
 						}
 
 						bishop_attacks.reset(target_square);
@@ -164,18 +165,19 @@ void MoveGen::generateMoves(const State& state, MoveList& moveList)
 
 					while (rook_attacks.board())
 					{
-						const std::size_t target_square = rook_attacks.find_1lsb();
+						const std::size_t target_square{ rook_attacks.find_1lsb() };
 
 
 						if (state.occupancy()[Color::BLACK].test(target_square))
 						{
 							//captures
-							moveList.addMove<MoveType::CAPTURE, Piece::ROOK>(source_square, target_square);
+							const Piece target_piece{ state.testPieceType(target_square) };
+							moveList.addMove<MoveType::CAPTURE, Piece::ROOK>(source_square, target_square, target_piece);
 						}
 						else
 						{
 							//quite
-							moveList.addMove<MoveType::QUIET, Piece::ROOK>(source_square, target_square);
+							moveList.addMove<MoveType::QUIET, Piece::ROOK>(source_square, target_square, Piece::NO_PIECE);
 						}
 
 						rook_attacks.reset(target_square);
@@ -197,18 +199,19 @@ void MoveGen::generateMoves(const State& state, MoveList& moveList)
 
 					while (queen_attacks.board())
 					{
-						const std::size_t target_square = queen_attacks.find_1lsb();
+						const std::size_t target_square{ queen_attacks.find_1lsb() };
 
 
 						if (state.occupancy()[Color::BLACK].test(target_square))
 						{
 							//captures
-							moveList.addMove<MoveType::CAPTURE, Piece::QUEEN>(source_square, target_square);
+							const Piece target_piece{ state.testPieceType(target_square) };
+							moveList.addMove<MoveType::CAPTURE, Piece::QUEEN>(source_square, target_square, target_piece);
 						}
 						else
 						{
 							//quite
-							moveList.addMove<MoveType::QUIET, Piece::QUEEN>(source_square, target_square);
+							moveList.addMove<MoveType::QUIET, Piece::QUEEN>(source_square, target_square, Piece::NO_PIECE);
 						}
 
 						queen_attacks.reset(target_square);
@@ -228,18 +231,19 @@ void MoveGen::generateMoves(const State& state, MoveList& moveList)
 
 					while (king_attacks.board())
 					{
-						const std::size_t target_square = king_attacks.find_1lsb();
+						const std::size_t target_square{ king_attacks.find_1lsb() };
 
 
 						if (state.occupancy()[Color::BLACK].test(target_square))
 						{
 							//captures
-							moveList.addMove<MoveType::CAPTURE, Piece::KING>(source_square, target_square);
+							const Piece target_piece{ state.testPieceType(target_square) };
+							moveList.addMove<MoveType::CAPTURE, Piece::KING>(source_square, target_square, target_piece);
 						}
 						else
 						{
 							//quite
-							moveList.addMove<MoveType::QUIET, Piece::KING>(source_square, target_square);
+							moveList.addMove<MoveType::QUIET, Piece::KING>(source_square, target_square, Piece::NO_PIECE);
 						}
 
 						king_attacks.reset(target_square);
@@ -292,7 +296,7 @@ void MoveGen::generateMoves(const State& state, MoveList& moveList)
 				{
 
 					const std::size_t source_square = board.find_1lsb();
-					const int target_square = static_cast<int>(source_square) + 8;
+					const int target_square{ static_cast<int>(source_square) + 8 };
 
 					//black pawn quite
 					if (target_square < 64 && !state.occupancy()[Occupancy::BOTH].test(target_square))
@@ -303,21 +307,21 @@ void MoveGen::generateMoves(const State& state, MoveList& moveList)
 						
 							if ((source_square >= a7 && source_square <= h7) && !state.occupancy()[Occupancy::BOTH].test(target_square + 8))
 							{
-								moveList.addMove<QUIET_PROMOTE, BQUEEN>(source_square, target_square);
-								moveList.addMove<QUIET_PROMOTE, BROOK>(source_square, target_square);
-								moveList.addMove<QUIET_PROMOTE, BBISHOP>(source_square, target_square);
-								moveList.addMove<QUIET_PROMOTE, BKNIGHT>(source_square, target_square);
+								moveList.addMove<QUIET_PROMOTE, BQUEEN>(source_square, target_square, Piece::NO_PIECE);
+								moveList.addMove<QUIET_PROMOTE, BROOK>(source_square, target_square, Piece::NO_PIECE);
+								moveList.addMove<QUIET_PROMOTE, BBISHOP>(source_square, target_square, Piece::NO_PIECE);
+								moveList.addMove<QUIET_PROMOTE, BKNIGHT>(source_square, target_square, Piece::NO_PIECE);
 							}
 						}
 						else
 						{
 							//one square
-							moveList.addMove<QUIET, BPAWN>(source_square, target_square);
+							moveList.addMove<QUIET, BPAWN>(source_square, target_square, Piece::NO_PIECE);
 
 							//two square
 							if ((source_square >= a7 && source_square <= h7) && !state.occupancy()[Occupancy::BOTH].test(target_square + 8))
 							{
-								moveList.addMove<QUIET, BPAWN>(source_square, target_square + 8);
+								moveList.addMove<QUIET, BPAWN>(source_square, target_square + 8, Piece::NO_PIECE);//TODO: maybe switch to variable because add twice
 							}
 						}
 					}
@@ -327,20 +331,21 @@ void MoveGen::generateMoves(const State& state, MoveList& moveList)
 
 					while (attacks.board())
 					{
-						const std::size_t attack_target = attacks.find_1lsb();
+						const std::size_t attack_target{ attacks.find_1lsb() };
+						const Piece target_piece{ state.testPieceType(attack_target) };
 
 						//promotion
 						if (source_square >= a2 && source_square <= h2)
 						{
-							moveList.addMove<MoveType::PROMOTE, Piece::BQUEEN>(source_square, attack_target);
-							moveList.addMove<MoveType::PROMOTE, Piece::BROOK>(source_square, attack_target);
-							moveList.addMove<MoveType::PROMOTE, Piece::BBISHOP>(source_square, attack_target);
-							moveList.addMove<MoveType::PROMOTE, Piece::BKNIGHT>(source_square, attack_target);
+							moveList.addMove<MoveType::PROMOTE, Piece::BQUEEN>(source_square, attack_target, target_piece);
+							moveList.addMove<MoveType::PROMOTE, Piece::BROOK>(source_square, attack_target, target_piece);
+							moveList.addMove<MoveType::PROMOTE, Piece::BBISHOP>(source_square, attack_target, target_piece);
+							moveList.addMove<MoveType::PROMOTE, Piece::BKNIGHT>(source_square, attack_target, target_piece);
 						}
 						else
 						{
 							//one square
-							moveList.addMove<MoveType::PROMOTE, Piece::BPAWN>(source_square, attack_target);
+							moveList.addMove<MoveType::PROMOTE, Piece::BPAWN>(source_square, attack_target, target_piece);
 						}
 						
 						attacks.reset(attack_target);
@@ -349,12 +354,12 @@ void MoveGen::generateMoves(const State& state, MoveList& moveList)
 					//enpessant
 					if (state.enpassantSquare() != no_sqr)
 					{
-						const BitBoard pawn_attack = m_preGen.pawnAttacks()[Color::BLACK][source_square];
-						const bool enpassant_attack = pawn_attack.test(state.enpassantSquare());
+						const BitBoard pawn_attack{ m_preGen.pawnAttacks()[Color::BLACK][source_square] };
+						const bool enpassant_attack{ pawn_attack.test(state.enpassantSquare()) };
 
 						if (enpassant_attack)
 						{
-							moveList.addMove<MoveType::ENPASSANT, Piece::BPAWN>(source_square, state.enpassantSquare());
+							moveList.addMove<MoveType::ENPASSANT, Piece::BPAWN>(source_square, state.enpassantSquare(), Piece::PAWN);
 						}
 					}
 
@@ -372,18 +377,18 @@ void MoveGen::generateMoves(const State& state, MoveList& moveList)
 
 					while (knight_attacks.board())
 					{
-						const std::size_t target_square = knight_attacks.find_1lsb();
-
+						const std::size_t target_square{ knight_attacks.find_1lsb() };
+						const Piece target_piece{ state.testPieceType(target_square) };
 
 						if (state.occupancy()[Color::WHITE].test(target_square))
 						{
 							//captures
-							moveList.addMove<MoveType::CAPTURE, Piece::BKNIGHT>(source_square, target_square);
+							moveList.addMove<MoveType::CAPTURE, Piece::BKNIGHT>(source_square, target_square, target_piece);
 						}
 						else
 						{
 							//quite
-							moveList.addMove<MoveType::QUIET, Piece::BKNIGHT>(source_square, target_square);
+							moveList.addMove<MoveType::QUIET, Piece::BKNIGHT>(source_square, target_square, target_piece);
 						}
 
 						knight_attacks.reset(target_square);
@@ -403,18 +408,18 @@ void MoveGen::generateMoves(const State& state, MoveList& moveList)
 
 					while (bishop_attacks.board())
 					{
-						const std::size_t target_square = bishop_attacks.find_1lsb();
-
+						const std::size_t target_square{ bishop_attacks.find_1lsb() };
 
 						if (state.occupancy()[Color::WHITE].test(target_square))
 						{
 							//captures
-							moveList.addMove<MoveType::CAPTURE, Piece::BBISHOP>(source_square, target_square);
+							const Piece target_piece{ state.testPieceType(target_square) };
+							moveList.addMove<MoveType::CAPTURE, Piece::BBISHOP>(source_square, target_square, target_piece);
 						}
 						else
 						{
 							//quite
-							moveList.addMove<MoveType::QUIET, Piece::BBISHOP>(source_square, target_square);
+							moveList.addMove<MoveType::QUIET, Piece::BBISHOP>(source_square, target_square, Piece::NO_PIECE);
 						}
 
 						bishop_attacks.reset(target_square);
@@ -434,18 +439,18 @@ void MoveGen::generateMoves(const State& state, MoveList& moveList)
 
 					while (rook_attacks.board())
 					{
-						const std::size_t target_square = rook_attacks.find_1lsb();
-
+						const std::size_t target_square{ rook_attacks.find_1lsb() };
 
 						if (state.occupancy()[Color::WHITE].test(target_square))
 						{
 							//captures
-							moveList.addMove<MoveType::CAPTURE, Piece::BROOK>(source_square, target_square);
+							const Piece target_piece{ state.testPieceType(target_square) };
+							moveList.addMove<MoveType::CAPTURE, Piece::BROOK>(source_square, target_square, target_piece);
 						}
 						else
 						{
 							//quite
-							moveList.addMove<MoveType::QUIET, Piece::BROOK>(source_square, target_square);
+							moveList.addMove<MoveType::QUIET, Piece::BROOK>(source_square, target_square, Piece::NO_PIECE);
 						}
 
 						rook_attacks.reset(target_square);
@@ -467,18 +472,18 @@ void MoveGen::generateMoves(const State& state, MoveList& moveList)
 
 					while (queen_attacks.board())
 					{
-						const std::size_t target_square = queen_attacks.find_1lsb();
-
+						const std::size_t target_square{ queen_attacks.find_1lsb() };
 
 						if (state.occupancy()[Color::WHITE].test(target_square))
 						{
 							//captures
-							moveList.addMove<MoveType::CAPTURE, Piece::BQUEEN>(source_square, target_square);
+							const Piece target_piece{ state.testPieceType(target_square) };
+							moveList.addMove<MoveType::CAPTURE, Piece::BQUEEN>(source_square, target_square, target_piece);
 						}
 						else
 						{
 							//quite
-							moveList.addMove<MoveType::QUIET, Piece::BQUEEN>(source_square, target_square);
+							moveList.addMove<MoveType::QUIET, Piece::BQUEEN>(source_square, target_square, Piece::NO_PIECE);
 						}
 
 						queen_attacks.reset(target_square);
@@ -498,18 +503,18 @@ void MoveGen::generateMoves(const State& state, MoveList& moveList)
 
 					while (king_attacks.board())
 					{
-						const std::size_t target_square = king_attacks.find_1lsb();
-
+						const std::size_t target_square{ king_attacks.find_1lsb() };
 
 						if (state.occupancy()[Color::WHITE].test(target_square))
 						{
 							//captures
-							moveList.addMove<MoveType::CAPTURE, Piece::BKING>(source_square, target_square);
+							const Piece target_piece{ state.testPieceType(target_square) };
+							moveList.addMove<MoveType::CAPTURE, Piece::BKING>(source_square, target_square, target_piece);
 						}
 						else
 						{
 							//quite
-							moveList.addMove<MoveType::QUIET, Piece::BKING>(source_square, target_square);
+							moveList.addMove<MoveType::QUIET, Piece::BKING>(source_square, target_square, Piece::NO_PIECE);
 						}
 
 						king_attacks.reset(target_square);

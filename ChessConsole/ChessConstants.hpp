@@ -31,19 +31,19 @@ const std::string tricky_position_fen = "r3k2r/p11pqpb1/bn2pnp1/2pPN3/1p2P3/2N2Q
 
 //most valuable victim - least valuable aggressor [capturing piece][captured piece]
 constexpr std::array<std::array<std::uint8_t, PIECE_COUNT>, PIECE_COUNT> mvv_lva = {{
-	{{ 11, 21, 31, 41, 51, 61,  11, 21, 31, 41, 51, 61, }},
-	{{ 12, 22, 32, 42, 52, 62,  12, 22, 32, 42, 52, 62, }},
-	{{ 13, 23, 33, 43, 53, 63,  13, 23, 33, 43, 53, 63, }},
-	{{ 14, 24, 34, 44, 54, 64,  14, 24, 34, 44, 54, 64, }},
-	{{ 15, 25, 35, 45, 55, 65,  15, 25, 35, 45, 55, 65, }},
 	{{ 16, 26, 36, 46, 56, 66,  16, 26, 36, 46, 56, 66, }},
-
-	{{ 11, 21, 31, 41, 51, 61,  11, 21, 31, 41, 51, 61, }},
-	{{ 12, 22, 32, 42, 52, 62,  12, 22, 32, 42, 52, 62, }},
-	{{ 13, 23, 33, 43, 53, 63,  13, 23, 33, 43, 53, 63, }},
-	{{ 14, 24, 34, 44, 54, 64,  14, 24, 34, 44, 54, 64, }},
 	{{ 15, 25, 35, 45, 55, 65,  15, 25, 35, 45, 55, 65, }},
-	{{ 16, 26, 36, 46, 56, 66,  16, 26, 36, 46, 56, 66, }}
+	{{ 14, 24, 34, 44, 54, 64,  14, 24, 34, 44, 54, 64, }},
+	{{ 13, 23, 33, 43, 53, 63,  13, 23, 33, 43, 53, 63, }},
+	{{ 12, 22, 32, 42, 52, 62,  12, 22, 32, 42, 52, 62, }},
+	{{ 11, 21, 31, 41, 51, 61,  11, 21, 31, 41, 51, 61, }},
+
+	{{ 16, 26, 36, 46, 56, 66,  16, 26, 36, 46, 56, 66, }},
+	{{ 15, 25, 35, 45, 55, 65,  15, 25, 35, 45, 55, 65, }},
+	{{ 14, 24, 34, 44, 54, 64,  14, 24, 34, 44, 54, 64, }},
+	{{ 13, 23, 33, 43, 53, 63,  13, 23, 33, 43, 53, 63, }},
+	{{ 12, 22, 32, 42, 52, 62,  12, 22, 32, 42, 52, 62, }},
+	{{ 11, 21, 31, 41, 51, 61,  11, 21, 31, 41, 51, 61, }}
 }};
 
 constexpr std::array<std::size_t, 128> create_char_to_piece()
@@ -92,16 +92,16 @@ constexpr std::array<std::uint8_t, MAX_BOARD_POSITIONS> castling_rights = {
 constexpr std::array<int, PIECE_COUNT> piece_value = {
 	100, //white pawn
 	300, //white knight
-	0,   //white king
 	300, //white bishop
 	500, //white rook
 	900, //white queen
+	0,   //white king
 	-100, //black pawn
 	-300, //black knight
-	-0,   //black king
 	-300, //black bishop
 	-500, //black rook
 	-900, //black queen
+	-0,   //black king
 };
 
 enum Castle {
@@ -119,22 +119,23 @@ enum Color {
 enum Piece {
 	PAWN = 0,
 	KNIGHT = 1,
-	KING = 2,
-	BISHOP = 3,
-	ROOK = 4,
-	QUEEN = 5,
+	BISHOP = 2,
+	ROOK = 3,
+	QUEEN = 4,
+	KING = 5,
 	BPAWN = 6,
 	BKNIGHT = 7,
-	BKING = 8,
-	BBISHOP = 9,
-	BROOK = 10,
-	BQUEEN = 11
+	BBISHOP = 8,
+	BROOK = 9,
+	BQUEEN = 10,
+	BKING = 11,
+	NO_PIECE = 12
 };
 
 enum Occupancy {
 	WHITEOCC = 0,
 	BLACKOCC = 1,
-	BOTH = 2,
+	BOTH = 2
 };
 
 enum RF {

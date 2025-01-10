@@ -33,43 +33,49 @@ public:
 	void printMoves() const;
 
 	template<MoveType M, Piece P>
-	void addMove(const std::size_t source, const std::size_t target)
+	void addMove(const std::size_t source, const std::size_t target, const Piece captured_piece)
 	{
-		if constexpr (M == MoveType::CAPTURE)
+		if constexpr (M == MoveType::CAPTURE) //TODO: restructure
 		{
 			if constexpr (P == Piece::PAWN)
 			{
-				m_moves.emplace_back(source, target, true, P, 0b010);
+				//pawn capture
+				m_moves.emplace_back(source, target, Piece::PAWN, captured_piece);
 			}
 			else
 			{
-				m_moves.emplace_back(source, target, true, P, 0b011);
+				//regular capture
+				m_moves.emplace_back(source, target, P, captured_piece);
 			}
 		}
 
 		if constexpr (M == MoveType::QUIET)
 		{
-			m_moves.emplace_back(source, target, false, P, 0b111);
+			//regular quiet
+			m_moves.emplace_back(source, target, P, Piece::NO_PIECE);
 		}
 
 		if constexpr (M == MoveType::QUIET_PROMOTE)
 		{
-			m_moves.emplace_back(source, target, P, false);
+			//quiet promote
+			m_moves.emplace_back(source, target, Piece::PAWN, Piece::NO_PIECE, false);
 		}
 
 		if constexpr (M == MoveType::PROMOTE)
 		{
-			m_moves.emplace_back(source, target, P, true);
+			//capture and promote
+			m_moves.emplace_back(source, target, Piece::PAWN, captured_piece, true);
 		}
 
 		if constexpr (M == MoveType::ENPASSANT)
 		{
-			m_moves.emplace_back(source, target);
+			//enpassant
+			m_moves.emplace_back(source, target, captured_piece);
 		}
 
 		if constexpr (M == MoveType::DOUBLE_PAWN)
 		{
-			m_moves.emplace_back(source, target, true);
+			m_moves.emplace_back(source, target);
 		}
 	}
 
