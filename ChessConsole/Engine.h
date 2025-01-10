@@ -21,6 +21,11 @@ private:
 
 	std::uint32_t m_depth;
 
+	bool m_stopSearch;
+	int m_timeCheckCount;
+	std::chrono::steady_clock::time_point m_searchStartTime;
+
+	std::uint32_t m_depthSearched;
 	std::uint32_t m_evaluations;
 	std::uint32_t m_nodes;
 	std::uint32_t m_prunes;
@@ -41,6 +46,8 @@ public:
 	int evaluate(const State& state);
 
 	int minimax(const State& state, const std::uint32_t depth, int alpha, int beta);
+
+	void iterativeMinimax(const State& state);
 
 	void printAllBoardAttacks(Color C) const;
 

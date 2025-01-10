@@ -48,14 +48,35 @@ int Engine::minimax(const State& state, const std::uint32_t depth, int alpha, in
 		return evaluate(state);
 	}
 
+	//time cutoff for iterative deepening
+	if (m_stopSearch)
+	{
+		return state.whiteToMove() ? INT_MAX : INT_MIN;
+	}
+
+	//only test time every 1000 nodes to avoid frequent system calls
+	if (m_timeCheckCount >= TIME_EVALUATION_NODE_DELAY)
+	{
+		const auto now{ std::chrono::high_resolution_clock::now() };
+		const std::chrono::duration<float> duration{ now - m_searchStartTime };
+
+		if (static_cast<size_t>(duration.count()) >= MAX_EVALUATION_TIME_SECONDS)
+		{
+			m_stopSearch = true;
+			return state.whiteToMove() ? INT_MAX : INT_MIN;
+		}
+
+		m_timeCheckCount = 0;
+	}
+
 	if (state.whiteToMove())
 	{
 		MoveList moves;
 		m_moveGen.generateMoves(state, moves);
 		moves.sortMoveList();
 
-		int max_eval = INT_MIN;
-		bool anyLegalMoves = false;
+		int max_eval{ INT_MIN };
+		bool anyLegalMoves{ false };
 
 		for (Move move : moves.moves())
 		{
@@ -91,7 +112,7 @@ int Engine::minimax(const State& state, const std::uint32_t depth, int alpha, in
 				}
 			}
 		}
-		
+
 		if (anyLegalMoves)
 		{
 			return max_eval;
@@ -117,8 +138,8 @@ int Engine::minimax(const State& state, const std::uint32_t depth, int alpha, in
 		m_moveGen.generateMoves(state, moves);
 		moves.sortMoveList();
 
-		int min_eval = INT_MAX;
-		bool anyLegalMoves = false;
+		int min_eval{ INT_MAX };
+		bool anyLegalMoves{ false };
 
 		for (Move move : moves.moves())
 		{
@@ -171,6 +192,19 @@ int Engine::minimax(const State& state, const std::uint32_t depth, int alpha, in
 				return 0;
 			}
 		}
+	}
+}
+
+void Engine::iterativeMinimax(const State& state)
+{
+	std::uint32_t depth{ 1 };
+	m_searchStartTime = std::chrono::high_resolution_clock::now();
+
+	while (!m_stopSearch)
+	{
+		m_depth = depth;
+		minimax(m_state, depth, INT_MIN, INT_MAX);
+		depth++;
 	}
 }
 
