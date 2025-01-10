@@ -8,6 +8,11 @@ Engine::Engine(std::string_view fen)
 
 
 
+void Engine::setState(std::string_view fen)
+{
+	m_state = State::parse_fen(fen);
+}
+
 int Engine::evaluate(const State& state)
 {
 	m_evaluations++;

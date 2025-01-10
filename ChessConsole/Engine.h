@@ -30,11 +30,13 @@ private:
 public:
 	Engine();
 
+	Engine(std::string_view fen);
+
+	void setState(std::string_view fen);
+
 	void step(const bool engine_side_white, const bool flip_board, const std::uint32_t depth);
 
 	void printBoard(const bool flipped) const;
-
-	Engine(std::string_view fen);
 
 	int evaluate(const State& state);
 

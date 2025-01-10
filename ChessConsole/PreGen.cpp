@@ -13,13 +13,7 @@ PreGen::PreGen()
 
 	m_bishopBitCount(), m_rookBitCount()
 {
-	//non slider
-	createPawnAttackMasks();
-	createKnightAttackMasks();
-	createKingAttackMasks();
-	createEdgeMasks();
-
-	//slider 
+	//slider masks 
 	createBishopAttackMasks();
 	createRookAttackMasks();
 
@@ -32,6 +26,13 @@ PreGen::PreGen()
 	//bishop and rook attacks
 	createBishopAttacks();
 	createRookAttacks();
+
+	//non slider attacks
+	createPawnAttackMasks();
+	createKnightAttackMasks();
+	createKingAttackMasks();
+	createEdgeMasks();
+
 	std::cout << "Tables Generated" << std::endl;
 }
 

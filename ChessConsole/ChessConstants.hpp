@@ -22,11 +22,13 @@ constexpr std::size_t   PIECE_COUNT									= 12;
 constexpr std::size_t   MAX_MOVELIST_COUNT							= 256;
 constexpr std::uint32_t MAX_MINIMAX_DEPTH							= 5;
 
-constexpr bool USING_PREGENERATED_MAGICS = true;
+constexpr bool USING_PREGENERATED_MAGICS = false;
 constexpr bool PRINT_GENERATED_MAGICS = false;
 
 const std::string start_position_fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
 const std::string tricky_position_fen = "r3k2r/p11pqpb1/bn2pnp1/2pPN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R";
+
+
 
 constexpr std::array<std::size_t, 128> create_char_to_piece()
 {
@@ -45,7 +47,6 @@ constexpr std::array<std::size_t, 128> create_char_to_piece()
 	table['q'] = 11;
 	return table;
 }
-
 constexpr std::array<std::size_t, 128> char_to_piece = create_char_to_piece();
 
 constexpr std::array<char, PIECE_COUNT> piece_to_char = { 'P', 'N', 'K', 'B', 'R', 'Q', 'X', 'n', 'k', 'b', 'r', 'q' };
