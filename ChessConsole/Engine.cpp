@@ -37,7 +37,6 @@ int Engine::evaluate(const State& state)
 		}
 	}
 
-
 	return evaluation;
 }
 
@@ -93,6 +92,12 @@ int Engine::minimax(const State& state, const std::uint32_t depth, int alpha, in
 				new_state.flipSide();
 
 				const int eval = minimax(new_state, depth - 1, alpha, beta);
+
+				//time cutoff for iterative deepening
+				if (m_stopSearch)
+				{
+					return state.whiteToMove() ? INT_MAX : INT_MIN;
+				}
 
 				if (eval > max_eval)
 				{
@@ -156,6 +161,12 @@ int Engine::minimax(const State& state, const std::uint32_t depth, int alpha, in
 				new_state.flipSide();
 				const int eval = minimax(new_state, depth - 1, alpha, beta);
 
+				//time cutoff for iterative deepening
+				if (m_stopSearch)
+				{
+					return state.whiteToMove() ? INT_MAX : INT_MIN;
+				}
+
 				if (eval < min_eval)
 				{
 					min_eval = eval;
@@ -213,7 +224,10 @@ void Engine::iterativeMinimax(const State& state)
 		m_depthSearched = depth; //TODO: fix these vars there should only be one
 		depth++;
 
-		m_bestMoveFinal = m_bestMove;
+		if (!m_stopSearch)
+		{
+			m_bestMoveFinal = m_bestMove;
+		}
 	}
 }
 
