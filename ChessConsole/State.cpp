@@ -110,13 +110,13 @@ void State::popSquare(const std::size_t square)
 	}
 }
 
-void State::moveQuiet(const Piece P, const std::size_t source, const std::size_t target)
+void State::moveQuiet(const Piece piece, const std::size_t source, const std::size_t target)
 {
-	popPiece(P, source);
-	setPiece(P, target);
+	popPiece(piece, source);
+	setPiece(piece, target);
 }
 
-void State::moveCapture(const Piece P, const std::size_t source, const std::size_t target)
+void State::moveCapture(const Piece piece, const std::size_t source, const std::size_t target)
 {
 	if (m_whiteToMove)
 	{
@@ -141,7 +141,7 @@ void State::moveCapture(const Piece P, const std::size_t source, const std::size
 		}
 	}
 
-	moveQuiet(P, source, target);
+	moveQuiet(piece, source, target);
 }
 
 void State::printBoard(const bool flipped) const

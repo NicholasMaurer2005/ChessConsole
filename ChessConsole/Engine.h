@@ -18,6 +18,7 @@ private:
 
 	State m_state;
 	Move m_bestMove;
+	Move m_bestMoveFinal;
 
 	std::uint32_t m_depth;
 
