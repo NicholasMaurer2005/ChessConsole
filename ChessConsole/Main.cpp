@@ -119,6 +119,7 @@ of that game I can't seem to. I think there is something wrong with castling bec
 
 int main()
 {
-	Engine engine{ start_position_fen };
-	engine.step(true, false, 8); 
+	//Engine engine{ start_position_fen };
+	Engine engine{ "rnbqkbnr/pppppppp/8/P7/8/8/PPPPPPPP/RNBQKBNR" };
+	engine.step(false, false, 8); 
 }

@@ -34,6 +34,7 @@ Move::Move(const std::size_t source, const std::size_t target, const Piece captu
 	m_data = static_cast<uint32_t>(source) 
 		| (static_cast<std::uint32_t>(target) << target_shift) 
 		| (static_cast<std::uint32_t>(single_bit) << enpassant_shift) 
+		| (static_cast<std::uint32_t>(single_bit) << capture_shift) 
 		| (mvv_lva[Piece::PAWN][Piece::PAWN] << value_shift);
 }
 

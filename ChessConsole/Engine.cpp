@@ -242,12 +242,41 @@ void Engine::step(const bool engine_side_white, const bool flip_board, const std
 
 		if (m_state.whiteToMove() == engine_side_white)
 		{
-			//engine move
-			std::cout << "thinking" << std::endl;
-			iterativeMinimax(m_state);
-			makeMove(m_bestMoveFinal, m_state);
-			
-			m_moveSource = m_bestMoveFinal.source();
+			if constexpr (PLAYER_PLAY_ITSELF)
+			{
+				//player move
+				MoveList list;
+				m_moveGen.generateMoves(m_state, list);
+
+				Move move;
+				while (true)
+				{
+					if (inputAndParseMove(list, move))
+					{
+						State new_state{ m_state };
+						new_state.printBoard(flip_board, m_moveSource);
+						move.print();
+
+						if (makeMove(move, new_state))
+						{
+							m_state = new_state;
+							m_moveSource = move.source();
+							break;
+						}
+					}
+
+					std::cout << "move does not exist" << std::endl;
+				}
+			}
+			else
+			{
+				//engine move
+				std::cout << "thinking" << std::endl;
+				iterativeMinimax(m_state);
+				makeMove(m_bestMoveFinal, m_state);
+
+				m_moveSource = m_bestMoveFinal.source();
+			}
 		}
 		else
 		{
@@ -461,7 +490,7 @@ bool Engine::makeMove(const Move move, State& state) const
 	const bool castle = move.castle();
 
 	//if statements in most efficient order for least number of branching
-	if (castle)
+	if (castle)//TODO: remove moveQuiet and moveCapture they have unnessesary loops and checks. make template function
 	{
 		if (state.whiteToMove())
 		{
@@ -508,9 +537,20 @@ bool Engine::makeMove(const Move move, State& state) const
 				state.popSquare(target);
 				state.setPiece(piece, target);
 			}
-			else if (enpassant)
+			else if (enpassant)//TODO: maybe make move enpassant and other compile time known piece movers
 			{
-				state.moveCapture(state.whiteToMove() ? Piece::PAWN : Piece::BPAWN, source, target);
+				if (state.whiteToMove())
+				{
+					state.popPiece(Piece::PAWN, source);
+					state.popPiece(Piece::BPAWN, target + 8);
+					state.setPiece(Piece::PAWN, target);
+				}
+				else
+				{
+					state.popPiece(Piece::BPAWN, source);
+					state.popPiece(Piece::PAWN, target - 8);
+					state.setPiece(Piece::BPAWN, target);
+				}
 			}
 			else
 			{
@@ -521,7 +561,7 @@ bool Engine::makeMove(const Move move, State& state) const
 		else
 		{
 			if (double_pawn)
-			{
+			{//TODO: we know its a pawn we dont have to loop through pieces
 				state.moveQuiet(state.whiteToMove() ? PAWN : BPAWN, source, target);
 				state.setEnpassantSquare(state.whiteToMove() ? source - 8 : source + 8);
 			}

@@ -24,9 +24,10 @@ constexpr std::uint32_t MAX_MINIMAX_DEPTH							= INT_MAX - 1;
 constexpr std::size_t   TIME_EVALUATION_NODE_DELAY					= 1000;
 constexpr std::size_t   MAX_EVALUATION_TIME_SECONDS					= 1; //maybe remove
 
-constexpr bool USING_PREGENERATED_MAGICS = true;
+constexpr bool USING_PREGENERATED_MAGICS = true;//TODO: seperate actual constants from options
 constexpr bool PRINT_GENERATED_MAGICS = false;
 constexpr bool ENGINE_PLAY_ITSELF = false;
+constexpr bool PLAYER_PLAY_ITSELF = false;
 
 const std::string start_position_fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
 const std::string tricky_position_fen = "r3k2r/p11pqpb1/bn2pnp1/2pPN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R";
