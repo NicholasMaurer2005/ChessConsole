@@ -31,6 +31,7 @@ private:
 	std::uint32_t m_nodes;
 	std::uint32_t m_prunes;
 	std::uint32_t m_mates;
+	std::size_t m_moveSource;
 	std::chrono::duration<double> m_seconds;
 
 public:

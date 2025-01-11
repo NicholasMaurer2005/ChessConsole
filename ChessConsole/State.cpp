@@ -144,7 +144,7 @@ void State::moveCapture(const Piece piece, const std::size_t source, const std::
 	moveQuiet(piece, source, target);
 }
 
-void State::printBoard(const bool flipped) const
+void State::printBoard(const bool flipped, const std::size_t source_square) const
 {
 	if (flipped)
 	{ 
@@ -157,11 +157,17 @@ void State::printBoard(const bool flipped) const
 
 				for (std::size_t i{}; i < PIECE_COUNT; i++)
 				{
-
 					if (m_positions[i].test_rf(7 - r, 7 - f))
 					{
 						piece_char = piece_to_char[i];
 					}
+				}
+
+				const std::size_t square{ r * RANK_MAX + f };
+
+				if (square == source_square)
+				{
+					piece_char = ' ';
 				}
 
 				std::cout << piece_char << " ";
@@ -178,8 +184,6 @@ void State::printBoard(const bool flipped) const
 			std::cout << (RANK_MAX - r) << "   ";
 			for (std::size_t f{}; f < FILE_MAX; f++)
 			{
-				const std::size_t square{ r * RANK_MAX + f };
-
 				char piece_char = '.';
 
 				for (std::size_t i{}; i < PIECE_COUNT; i++)
@@ -189,6 +193,13 @@ void State::printBoard(const bool flipped) const
 					{
 						piece_char = piece_to_char[i];
 					}
+				}
+
+				const std::size_t square{ r * RANK_MAX + f };
+
+				if (square == source_square)
+				{
+					piece_char = ' ';
 				}
 
 				std::cout << piece_char << " ";

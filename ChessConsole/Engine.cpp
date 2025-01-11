@@ -1,10 +1,12 @@
 #include "Engine.h"
 
 Engine::Engine()
-	: m_moveGen(), m_state(), m_bestMove(), m_evaluations(), m_nodes(), m_prunes(), m_seconds(), m_mates(), m_depth(), m_depthSearched(), m_stopSearch(), m_timeCheckCount(), m_bestMoveFinal() {}
+	: m_moveGen(), m_state(), m_bestMove(), m_evaluations(), m_nodes(), m_prunes(), m_seconds(), m_mates(), m_depth(), m_depthSearched(), m_stopSearch(), m_timeCheckCount(), 
+	m_bestMoveFinal(), m_moveSource() {}
 
 Engine::Engine(std::string_view fen)
-	: m_moveGen(), m_state(State::parse_fen(fen)), m_bestMove(), m_evaluations(), m_nodes(), m_prunes(), m_seconds(), m_mates(), m_depth(), m_depthSearched(), m_stopSearch(), m_timeCheckCount(), m_bestMoveFinal() {}
+	: m_moveGen(), m_state(State::parse_fen(fen)), m_bestMove(), m_evaluations(), m_nodes(), m_prunes(), m_seconds(), m_mates(), m_depth(), m_depthSearched(), m_stopSearch(), 
+	m_timeCheckCount(), m_bestMoveFinal(), m_moveSource() {}
 
 
 
@@ -207,8 +209,8 @@ void Engine::iterativeMinimax(const State& state)
 	while (!m_stopSearch)
 	{
 		m_depth = depth;
-		m_depthSearched = depth; //TODO: fix these vars there should only be one
 		minimax(m_state, depth, INT_MIN, INT_MAX);
+		m_depthSearched = depth; //TODO: fix these vars there should only be one
 		depth++;
 
 		m_bestMoveFinal = m_bestMove;
@@ -217,7 +219,7 @@ void Engine::iterativeMinimax(const State& state)
 
 void Engine::step(const bool engine_side_white, const bool flip_board, const std::uint32_t depth)
 {
-	m_state.printBoard(flip_board);
+	m_state.printBoard(flip_board, RF::no_sqr);
 	m_depth = depth;
 
 	while (true)
@@ -230,6 +232,8 @@ void Engine::step(const bool engine_side_white, const bool flip_board, const std
 			std::cout << "thinking" << std::endl;
 			iterativeMinimax(m_state);
 			makeMove(m_bestMoveFinal, m_state);
+			
+			m_moveSource = m_bestMoveFinal.source();
 		}
 		else
 		{
@@ -239,6 +243,8 @@ void Engine::step(const bool engine_side_white, const bool flip_board, const std
 				std::cout << "thinking" << std::endl;
 				iterativeMinimax(m_state);
 				makeMove(m_bestMoveFinal, m_state);
+
+				m_moveSource = m_bestMoveFinal.source();
 			}
 			else
 			{
@@ -252,12 +258,13 @@ void Engine::step(const bool engine_side_white, const bool flip_board, const std
 					if (inputAndParseMove(list, move))
 					{
 						State new_state{ m_state };
-						new_state.printBoard(flip_board);
+						new_state.printBoard(flip_board, m_moveSource);
 						move.print();
 
 						if (makeMove(move, new_state))
 						{
 							m_state = new_state;
+							m_moveSource = move.source();
 							break;
 						}
 					}
@@ -268,13 +275,13 @@ void Engine::step(const bool engine_side_white, const bool flip_board, const std
 		}
 
 		const auto end_time = std::chrono::high_resolution_clock::now();
-
 		const std::chrono::duration<double> duration = end_time - start_time;
+
 		system("cls");
-		m_state.printBoard(flip_board);
+		m_state.printBoard(flip_board, m_moveSource);
 
 		std::cout << "move: ";
-		m_bestMove.print();
+		m_bestMoveFinal.print();
 
 		std::cout << "depth: " << m_depthSearched << std::endl;
 		std::cout << "nodes: " << m_nodes << std::endl;
@@ -325,7 +332,7 @@ bool Engine::kingInCheck(const State& state) const
 
 void Engine::printBoard(const bool flipped) const
 {
-	m_state.printBoard(flipped);
+	m_state.printBoard(flipped, RF::no_sqr);
 }
 
 void Engine::printAllBoardAttacks(Color C) const

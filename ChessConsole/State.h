@@ -44,7 +44,7 @@ public:
 
 	void flipSide();
 
-	void printBoard(const bool flipped) const;
+	void printBoard(const bool flipped, const std::size_t source_square) const;
 
 	void setPiece(const Piece P, const std::size_t square);
 
