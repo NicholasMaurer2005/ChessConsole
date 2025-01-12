@@ -2,11 +2,11 @@
 
 Engine::Engine()
 	: m_moveGen(), m_state(), m_bestMove(), m_evaluations(), m_nodes(), m_prunes(), m_seconds(), m_mates(), m_depth(), m_depthSearched(), m_stopSearch(), m_timeCheckCount(), 
-	m_bestMoveFinal(), m_moveSource() {}
+	m_bestMoveFinal(), m_moveSource(), m_searchSeconds() {}
 
 Engine::Engine(std::string_view fen)
 	: m_moveGen(), m_state(State::parse_fen(fen)), m_bestMove(), m_evaluations(), m_nodes(), m_prunes(), m_seconds(), m_mates(), m_depth(), m_depthSearched(), m_stopSearch(), 
-	m_timeCheckCount(), m_bestMoveFinal(), m_moveSource() {}
+	m_timeCheckCount(), m_bestMoveFinal(), m_moveSource(), m_searchSeconds() {}
 
 
 
@@ -61,7 +61,7 @@ int Engine::minimax(const State& state, const std::uint32_t depth, int alpha, in
 		const auto now{ std::chrono::high_resolution_clock::now() };
 		const std::chrono::duration<float> duration{ now - m_searchStartTime };
 
-		if (static_cast<size_t>(duration.count()) >= MAX_EVALUATION_TIME_SECONDS)
+		if (static_cast<size_t>(duration.count()) >= m_searchSeconds)
 		{
 			m_stopSearch = true;
 			return state.whiteToMove() ? INT_MAX : INT_MIN;
@@ -231,10 +231,10 @@ void Engine::iterativeMinimax(const State& state)
 	}
 }
 
-void Engine::step(const bool engine_side_white, const bool flip_board, const std::uint32_t depth)
+void Engine::step(const bool engine_side_white, const bool flip_board, const std::uint32_t search_seconds)
 {
 	m_state.printBoard(flip_board, RF::no_sqr);
-	m_depth = depth;
+	m_searchSeconds = search_seconds;
 
 	while (true)
 	{
@@ -341,6 +341,38 @@ void Engine::step(const bool engine_side_white, const bool flip_board, const std
 
 		m_state.flipSide();
 	}
+}
+
+void Engine::perft(const int depth)
+{
+	for (std::size_t i{ 1 }; i < depth + 1; i++)
+	{
+		std::cout << "perf to depth " << i << ": " << perftRun(m_state, i) << std::endl;
+	}
+}
+
+int Engine::perftRun(const State& state, const int depth)
+{
+	if (depth == 0)
+	{
+		return 1;
+	}
+
+	State new_state{ state };
+	MoveList moves;
+	m_moveGen.generateMoves(state, moves);
+
+	int possible_moves{};
+
+	for (Move move : moves.moves())
+	{
+		if (makeMove(move, new_state))
+		{
+			possible_moves += perftRun(new_state, depth - 1);
+		}
+	}
+
+	return possible_moves;
 }
 
 bool Engine::kingInCheck(const State& state) const

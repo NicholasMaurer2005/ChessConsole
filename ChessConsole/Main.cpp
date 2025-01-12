@@ -66,8 +66,9 @@ Engine is created and given a FEN, but I didn't fully implement FEN notation so 
 explaining the board positions.For example, the starting position : rnbqkbnr / pppppppp / 8 / 8 / 8 / 8 / PPPPPPPP / RNBQKBNR
 You cannot tell the engine which side needs to castle, which side can move, or anything else that a normal FEN tells.I call it a 90 % FEN.
 
-engine.step() is given three values, which side the engine plays, whether to flip the board when displaying, and how many moves
-ahead to look.If it takes way too long to generate moves, lower the depth value so it doesn't look so far ahead. 
+engine.step() is given three values, which side the engine plays, whether to flip the board when displaying, and how many seconds to think for.
+
+engine.perft() runs a perft test to the depth you provide.
 
 When running it will display the board, white pieces are uppercase, and black pieces are lowercase.black pawns are represented with an
 uppercase X instead of a lowercase p because it is hard to distinguish between P and p when the board is displayed.It also displays the most recent move and some
@@ -104,7 +105,7 @@ Finally, this program is significantly faster in release mode.
 
 
 /*
-this is still a work in progress, I plan to add multithreading, iterative deepening, better move sorting, and a more sophisticated evaluation
+this is still a work in progress, I plan to add multithreading, zobrist hashing, and a more sophisticated evaluation
 algorithm.
 
 right now there are some strange bugs, sometimes the engine will spawn pieces onto the board or make pieces move where they shouldn't 
@@ -119,7 +120,7 @@ of that game I can't seem to. I think there is something wrong with castling bec
 
 int main()
 {
-	//Engine engine{ start_position_fen };
-	Engine engine{ "rnbqkbnr/pppppppp/8/P7/8/8/PPPPPPPP/RNBQKBNR" };
-	engine.step(false, false, 8); 
+	Engine engine{ start_position_fen };
+	//engine.perft(10);
+	engine.step(true, false, 1); 
 }

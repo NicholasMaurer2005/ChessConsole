@@ -21,6 +21,7 @@ private:
 	Move m_bestMoveFinal;
 
 	std::uint32_t m_depth;
+	std::uint32_t m_searchSeconds;
 
 	bool m_stopSearch;
 	int m_timeCheckCount;
@@ -42,6 +43,10 @@ public:
 	void setState(std::string_view fen);
 
 	void step(const bool engine_side_white, const bool flip_board, const std::uint32_t depth);
+
+	void perft(const int depth);
+
+	int perftRun(const State& state, const int depth);
 
 	void printBoard(const bool flipped) const;
 
