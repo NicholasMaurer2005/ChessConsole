@@ -44,13 +44,10 @@ public:
 
 	int minimax(const State& state, const std::uint32_t depth, int alpha, int beta);
 
-<<<<<<< Updated upstream
-=======
 	int negamax(const State& state, const std::uint32_t depth, int alpha, int beta);
 
 	void iterativeMinimax(const State& state);
 
->>>>>>> Stashed changes
 	void printAllBoardAttacks(Color C) const;
 
 	bool inputAndParseMove(MoveList& list, Move& move);

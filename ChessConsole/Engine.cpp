@@ -179,9 +179,6 @@ int Engine::minimax(const State& state, const std::uint32_t depth, int alpha, in
 	}
 }
 
-<<<<<<< Updated upstream
-void Engine::step(const bool engine_side_white, const bool flip_board, const std::uint32_t depth)
-=======
 int Engine::negamax(const State& state, const std::uint32_t depth, int alpha, int beta) //alpha = INT_MIN, beta = INT_MAX in initial call
 {
 	//time cutoff logic
@@ -243,8 +240,7 @@ int Engine::negamax(const State& state, const std::uint32_t depth, int alpha, in
 	return highest_score;
 }
 
-void Engine::iterativeMinimax(const State& state)
->>>>>>> Stashed changes
+void Engine::step(const bool engine_side_white, const bool flip_board, const std::uint32_t depth)
 {
 	m_state.printBoard(flip_board);
 	m_depth = depth;
@@ -352,7 +348,7 @@ bool Engine::kingInCheck(const State& state) const
 
 void Engine::printBoard(const bool flipped) const
 {
-	m_state.printBoard(flipped);
+	m_state.printBoard(flipped, no_sqr);
 }
 
 void Engine::printAllBoardAttacks(Color C) const
@@ -374,27 +370,7 @@ bool Engine::inputAndParseMove(MoveList& list, Move& move)
 	std::getline(std::cin, input);
 	//std::transform(input.begin(), input.end(), input.begin(), ::tolower);
 
-	if (input == "5")
-	{
-		m_depth = 5;
-	}
-	else if (input == "6")
-	{
-		m_depth = 6;
-	}
-	else if (input == "7")
-	{
-		m_depth = 7;
-	}
-	else if (input == "8")
-	{
-		m_depth = 8;
-	}
-	else if (input == "9")
-	{
-		m_depth = 9;
-	}
-	else if (input == "wk"s)
+	if (input == "wk"s)
 	{
 		if (list.findCastleMove(g1))
 		{

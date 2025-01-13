@@ -120,10 +120,6 @@ of that game I can't seem to. I think there is something wrong with castling bec
 int main()
 {
 	Engine engine{ start_position_fen };
-<<<<<<< Updated upstream
 	engine.step(false, false, 8); 
-=======
 	//engine.perft(10);
-	engine.step(false, false, 10); 
->>>>>>> Stashed changes
 }
