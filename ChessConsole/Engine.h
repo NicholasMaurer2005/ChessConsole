@@ -40,8 +40,17 @@ public:
 
 	int evaluate(const State& state);
 
+	int queiscence(const State& state, int alpha, int beta);
+
 	int minimax(const State& state, const std::uint32_t depth, int alpha, int beta);
 
+<<<<<<< Updated upstream
+=======
+	int negamax(const State& state, const std::uint32_t depth, int alpha, int beta);
+
+	void iterativeMinimax(const State& state);
+
+>>>>>>> Stashed changes
 	void printAllBoardAttacks(Color C) const;
 
 	bool inputAndParseMove(MoveList& list, Move& move);

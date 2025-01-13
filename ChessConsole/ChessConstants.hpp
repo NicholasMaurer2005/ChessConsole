@@ -20,7 +20,14 @@ constexpr std::size_t   MAX_BISHOP_ATTACKS							= 512;
 constexpr std::size_t   MAX_ROOK_ATTACKS							= 4096;
 constexpr std::size_t   PIECE_COUNT									= 12;
 constexpr std::size_t   MAX_MOVELIST_COUNT							= 256;
+<<<<<<< Updated upstream
 constexpr std::uint32_t MAX_MINIMAX_DEPTH							= 5;
+=======
+constexpr std::uint32_t MAX_MINIMAX_DEPTH							= INT_MAX - 1;
+constexpr std::size_t   TIME_EVALUATION_NODE_DELAY					= 1000;
+constexpr std::size_t   MAX_EVALUATION_TIME_SECONDS					= 1; //maybe remove
+constexpr int           CHECKMATE_SCORE					            = INT_MIN + 1; 
+>>>>>>> Stashed changes
 
 constexpr bool USING_PREGENERATED_MAGICS = true;
 constexpr bool PRINT_GENERATED_MAGICS = false;

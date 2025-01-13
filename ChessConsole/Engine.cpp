@@ -39,6 +39,11 @@ int Engine::evaluate(const State& state)
 	return evaluation;
 }
 
+int queiscence(const State& state, int alpha, int beta)
+{
+
+}
+
 int Engine::minimax(const State& state, const std::uint32_t depth, int alpha, int beta)
 {
 	m_nodes++;
@@ -174,7 +179,72 @@ int Engine::minimax(const State& state, const std::uint32_t depth, int alpha, in
 	}
 }
 
+<<<<<<< Updated upstream
 void Engine::step(const bool engine_side_white, const bool flip_board, const std::uint32_t depth)
+=======
+int Engine::negamax(const State& state, const std::uint32_t depth, int alpha, int beta) //alpha = INT_MIN, beta = INT_MAX in initial call
+{
+	//time cutoff logic
+
+	//leaf of search
+	if (depth == 0)
+	{
+		return evaluate(state);
+	}
+
+	//find all pseudo moves for given state
+	MoveList moves;
+	m_moveGen.generateMoves(state, moves);
+	moves.sortMoveList();
+
+	//test for checkmate or stalemate
+	if (moves.count() == 0)
+	{
+		if (kingInCheck(state))
+		{
+			//checkmate
+			return CHECKMATE_SCORE;
+		}
+		else
+		{
+			//stalemate
+			return 0;
+		}
+	}
+
+	//find the highest score for all moves
+	int highest_score{ INT_MIN };
+
+	for (Move move : moves.moves())
+	{
+		//copy state to try to make move
+		State new_state{ state };
+
+		//try to make move and get find highest score
+		if (makeMove(move, new_state))
+		{
+			//flip side to move
+			new_state.flipSide();
+
+			//find the best score for all the branches of this move
+			int score{ -negamax(new_state, depth - 1, -beta, -alpha) };
+			highest_score = std::max(highest_score, score);
+
+			//alpha-beta pruning, stop searching if a better move is already guarenteed
+			alpha = std::max(alpha, score);
+
+			if (alpha >= beta)
+			{
+				break;
+			}
+		}
+	}
+
+	return highest_score;
+}
+
+void Engine::iterativeMinimax(const State& state)
+>>>>>>> Stashed changes
 {
 	m_state.printBoard(flip_board);
 	m_depth = depth;
