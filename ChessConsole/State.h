@@ -62,7 +62,7 @@ public:
 
 
 	//modifiers
-	void setCastleRights(std::size_t square);
+	void setCastleRights(const std::size_t square);
 
 	void setEnpassantSquare(const std::size_t square);
 
@@ -79,5 +79,5 @@ public:
 
 	static State parse_fen(const std::string_view fen);
 
-	static std::array<std::string, RANK_MAX> split_fen(std::string_view fen);
+	static std::array<std::string, RANK_MAX> split_fen(const std::string_view fen);
 };

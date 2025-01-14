@@ -179,7 +179,7 @@ int Engine::minimax(const State& state, const std::uint32_t depth, int alpha, in
 	}
 }
 
-int Engine::negamax(const State& state, const std::uint32_t depth, int alpha, int beta) //alpha = INT_MIN, beta = INT_MAX in initial call
+int Engine::negamax(State& state, const std::uint32_t depth, int alpha, int beta) //alpha = INT_MIN, beta = INT_MAX in initial call
 {
 	//time cutoff logic
 
@@ -197,7 +197,7 @@ int Engine::negamax(const State& state, const std::uint32_t depth, int alpha, in
 	//test for checkmate or stalemate
 	if (moves.count() == 0)
 	{
-		if (kingInCheck(state))
+		if (kingInCheck(state, state.whiteToMove()))
 		{
 			//checkmate
 			return CHECKMATE_SCORE;
@@ -214,18 +214,19 @@ int Engine::negamax(const State& state, const std::uint32_t depth, int alpha, in
 
 	for (Move move : moves.moves())
 	{
-		//copy state to try to make move
-		State new_state{ state };
-
 		//try to make move and get find highest score
-		if (makeMove(move, new_state))
+		if (makeLegal(state, move))
 		{
 			//flip side to move
-			new_state.flipSide();
+			state.flipSide();
 
 			//find the best score for all the branches of this move
-			int score{ -negamax(new_state, depth - 1, -beta, -alpha) };
+			int score{ -negamax(state, depth - 1, -beta, -alpha) };
 			highest_score = std::max(highest_score, score);
+
+			//reset state
+			state.flipSide();
+			state.unmakeMove(move);
 
 			//alpha-beta pruning, stop searching if a better move is already guarenteed
 			alpha = std::max(alpha, score);
@@ -316,9 +317,9 @@ void Engine::step(const bool engine_side_white, const bool flip_board, const std
 	}
 }
 
-bool Engine::kingInCheck(const State& state) const
+bool Engine::kingInCheck(const State& state, const bool whiteSide) const
 {
-	if (state.whiteToMove())
+	if (whiteSide)
 	{
 		const std::size_t king_square = state.positions()[KING].find_1lsb();
 
@@ -448,106 +449,19 @@ std::size_t Engine::squareToIndex(std::string_view square)
 	return rank * RANK_MAX + file;
 }
 
-bool Engine::makeMove(const Move move, State& state) const
+bool Engine::makeLegal(State& state, const Move move) const
 {
-	state.setEnpassantSquare(no_sqr);
+	state.makeMove(move);
 
-	//unpack
-	const std::size_t source = move.source();
-	const std::size_t target = move.target();
-	const Piece piece = move.piece();
-	const bool promoted = move.promoted();
-	const bool capture = move.capture();
-	const bool double_pawn = move.doublePawnPush();
-	const bool enpassant = move.enpassant();
-	const bool castle = move.castle();
-
-	//if statements in most efficient order for least number of branching
-	if (castle)
+	if (kingInCheck(state, state.whiteToMove()))
 	{
-		if (state.whiteToMove())
-		{
-			state.moveQuiet(KING, e1, source);
-
-			if (source == g1)
-			{
-				state.moveQuiet(ROOK, h1, f1);
-				state.setCastleRights(h1);
-			}
-			else
-			{
-				state.moveQuiet(ROOK, a1, d1);
-				state.setCastleRights(a1);
-			}
-		}
-		else
-		{
-			state.moveQuiet(BKING, e8, source);
-
-			if (source == g8)
-			{
-				state.moveQuiet(BROOK, h8, f8);
-				state.setCastleRights(h8);
-			}
-			else
-			{
-				state.moveQuiet(BROOK, a8, d8);
-				state.setCastleRights(a8);
-			}
-		}
-	}
-	else
-	{
-		state.setCastleRights(source);
-		state.setCastleRights(target);
-
-		//captures
-		if (capture)
-		{
-			if (promoted)
-			{
-				state.popPiece(state.whiteToMove() ? Piece::PAWN : Piece::BPAWN, source);
-				state.popSquare(target);
-				state.setPiece(piece, target);
-			}
-			else if (enpassant)
-			{
-				state.moveCapture(Piece::PAWN, source, target);
-			}
-			else
-			{
-				state.moveCapture(piece, source, target);
-			}
-		}
-		//quiets
-		else
-		{
-			if (double_pawn)
-			{
-				state.moveQuiet(state.whiteToMove() ? PAWN : BPAWN, source, target);
-				state.setEnpassantSquare(state.whiteToMove() ? source - 8 : source + 8);
-			}
-			else if (promoted)
-			{
-				state.popPiece(state.whiteToMove() ? Piece::PAWN : Piece::BPAWN, source);
-				state.setPiece(piece, target);
-			}
-			else
-			{
-				state.moveQuiet(piece, source, target);
-			}
-		}
-	}
-
-	if (kingInCheck(state))
-	{
+		state.unmakeMove(move);
 		return false;
 	}
 	else
 	{
 		return true;
 	}
-	
 }
 
 

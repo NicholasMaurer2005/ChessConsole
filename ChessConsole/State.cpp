@@ -123,7 +123,7 @@ bool State::testCastleRights(const Castle C) const
 
 
 //modifiers
-void State::setCastleRights(std::size_t square)
+void State::setCastleRights(const std::size_t square)
 {
 	m_lastCastleRights = m_castleRights;
 	m_castleRights &= castling_rights[square];
@@ -329,13 +329,6 @@ void State::flipSide()
 	m_whiteToMove = !m_whiteToMove;
 }
 
-void State::popPiece(const Piece P, const std::size_t square)
-{
-	m_positions[static_cast<size_t>(P)].reset(square);
-	m_occupancy[static_cast<size_t>(P / 6)].reset(square);
-	m_occupancy[Occupancy::BOTH].reset(square);
-}
-
 //helpers
 void State::printBoard(const bool flipped, const std::size_t source_square) const
 {
@@ -424,7 +417,7 @@ State State::parse_fen(const std::string_view fen)
 	return state;
 }
 
-std::array<std::string, RANK_MAX> State::split_fen(std::string_view fen)
+std::array<std::string, RANK_MAX> State::split_fen(const std::string_view fen)
 {
 	std::array<std::string, RANK_MAX> split_fen;
 	std::size_t index{};
