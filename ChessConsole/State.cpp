@@ -5,14 +5,18 @@ State::State()
 	: m_positions(), 
 	m_occupancy(), 
 	m_castleRights(),
+	m_lastCastleRights(),
 	m_enpassantSquare(no_sqr),
+	m_lastEnpassantSquare(no_sqr),
 	m_whiteToMove(true) {}
 
 State::State(const State& state)
 	: m_positions(state.m_positions),
 	m_occupancy(state.m_occupancy),
 	m_castleRights(state.m_castleRights),
+	m_lastCastleRights(),
 	m_enpassantSquare(no_sqr),
+	m_lastEnpassantSquare(no_sqr),
 	m_whiteToMove(state.m_whiteToMove) {}
 
 
@@ -20,15 +24,15 @@ State::State(const State& state)
 //private methods
 void State::setPiece(const Piece piece, const std::size_t square)
 {
-	m_positions[P].set(square);
-	m_occupancy[P / 6].set(square);
+	m_positions[piece].set(square);
+	m_occupancy[piece / 6].set(square);
 	m_occupancy[Occupancy::BOTH].set(square);
 }
 
 void State::popPiece(const Piece piece, const std::size_t square)
 {
-	m_positions[P].reset(square);
-	m_occupancy[P / 6].reset(square);
+	m_positions[piece].reset(square);
+	m_occupancy[piece / 6].reset(square);
 	m_occupancy[Occupancy::BOTH].reset(square);
 }
 
@@ -38,9 +42,9 @@ void State::moveQuiet(const Piece piece, const std::size_t source, const std::si
 	setPiece(piece, target);
 }
 
-void State::moveCapture(const std::size_t source, const std::size_t target, Piece capturedPiece)
+void State::moveCapture(const std::size_t source, const std::size_t target, Piece piece, Piece capturedPiece)
 {
-	popSquare(target);
+	popPiece(capturedPiece, target);
 	moveQuiet(capturedPiece, source, target);
 }
 
@@ -69,6 +73,7 @@ void State::popSquare(const std::size_t square)
 		}
 	}
 }
+
 
 
 //getters
@@ -110,36 +115,6 @@ Piece State::testPieceType(const std::size_t square) const
 	return Piece::NO_PIECE;
 }
 
-bool State::kingInCheck() const
-{
-	if (m_whiteToMove)
-	{
-		const std::size_t king_square = m_positions[Piece::KING].find_1lsb();
-
-		if (king_square == SIZE_MAX)
-		{
-			return true;
-		}
-		else
-		{
-			return m_moveGen.isSquareAttacked(state, king_square, Color::WHITE);
-		}
-	}
-	else
-	{
-		const std::size_t king_square = state.positions()[BKING].find_1lsb();
-
-		if (king_square == SIZE_MAX)
-		{
-			return true;
-		}
-		else
-		{
-			return m_moveGen.isSquareAttacked(state, king_square, Color::BLACK);
-		}
-	}
-}
-
 bool State::testCastleRights(const Castle C) const
 {
 	return static_cast<bool>(m_castleRights & C);
@@ -150,131 +125,204 @@ bool State::testCastleRights(const Castle C) const
 //modifiers
 void State::setCastleRights(std::size_t square)
 {
+	m_lastCastleRights = m_castleRights;
 	m_castleRights &= castling_rights[square];
 }
 
 void State::setEnpassantSquare(const std::size_t square)
 {
+	m_lastEnpassantSquare = m_enpassantSquare;
 	m_enpassantSquare = square;
 }
 
-bool State::makeMove(const Move move)
+void State::makeMove(const Move move)
 {
 	setEnpassantSquare(no_sqr);
 
-	//unpack
-	const std::size_t source = move.source();
-	const std::size_t target = move.target();
-	const Piece piece = move.piece();
-	const bool promoted = move.promoted();
-	const bool capture = move.capture();
-	const bool double_pawn = move.doublePawnPush();
-	const bool enpassant = move.enpassant();
-	const bool castle = move.castle();
+	const std::size_t source{ move.source() };
 
-	//if statements in most efficient order for least number of branching
-	if (castle)//TODO: remove moveQuiet and moveCapture they have unnessesary loops and checks. make template function
+	if (move.castle())
 	{
+
 		if (m_whiteToMove)
 		{
-			moveQuiet(KING, e1, source);
+			moveQuiet(Piece::KING, e1, source);
 
 			if (source == g1)
 			{
-				moveQuiet(ROOK, h1, f1);
+				moveQuiet(Piece::ROOK, h1, f1);
 				setCastleRights(h1);
 			}
 			else
 			{
-				moveQuiet(ROOK, a1, d1);
+				moveQuiet(Piece::ROOK, a1, d1);
 				setCastleRights(a1);
 			}
 		}
 		else
 		{
-			moveQuiet(BKING, e8, source);
+			moveQuiet(Piece::BKING, e8, source);
 
 			if (source == g8)
 			{
-				moveQuiet(BROOK, h8, f8);
+				moveQuiet(Piece::BROOK, h8, f8);
 				setCastleRights(h8);
 			}
 			else
 			{
-				moveQuiet(BROOK, a8, d8);
+				moveQuiet(Piece::BROOK, a8, d8);
 				setCastleRights(a8);
 			}
 		}
 	}
 	else
 	{
+		const std::size_t target{ move.target() };
+		const Piece capture{ move.capture()};
+
 		setCastleRights(source);
 		setCastleRights(target);
 
 		//captures
-		if (capture)
+		if (capture != Piece::NO_PIECE)
 		{
-			if (promoted)
+			if (move.promoted())
 			{
 				popPiece(m_whiteToMove ? Piece::PAWN : Piece::BPAWN, source);
-				popSquare(target);
-				setPiece(piece, target);
+				popPiece(capture, target);
+				setPiece(move.piece(), target);
 			}
-			else if (enpassant)//TODO: maybe make move enpassant and other compile time known piece movers
+			else if (move.enpassant())
 			{
 				if (m_whiteToMove)
 				{
-					popPiece(Piece::PAWN, source);
 					popPiece(Piece::BPAWN, target + 8);
-					setPiece(Piece::PAWN, target);
+					moveQuiet(Piece::PAWN, source, target);
 				}
 				else
 				{
-					popPiece(Piece::BPAWN, source);
 					popPiece(Piece::PAWN, target - 8);
-					setPiece(Piece::BPAWN, target);
+					moveQuiet(Piece::BPAWN, source, target);
 				}
 			}
 			else
 			{
-				moveCapture(source, target, piece);
+				moveCapture(source, target, move.piece(), capture);
 			}
 		}
 		//quiets
 		else
 		{
-			if (double_pawn)
+			if (move.doublePawnPush())
 			{//TODO: we know its a pawn we dont have to loop through pieces
-				moveQuiet(m_whiteToMove ? PAWN : BPAWN, source, target);
+				moveQuiet(m_whiteToMove ? Piece::PAWN : Piece::BPAWN, source, target);
 				setEnpassantSquare(m_whiteToMove ? source - 8 : source + 8);
 			}
-			else if (promoted)
+			else if (move.promoted())
 			{
 				popPiece(m_whiteToMove ? Piece::PAWN : Piece::BPAWN, source);
-				setPiece(piece, target);
+				setPiece(move.piece(), target);
 			}
 			else
 			{
-				moveQuiet(piece, source, target);
+				moveQuiet(move.piece(), source, target);
 			}
 		}
 	}
-
-	if (kingInCheck())
-	{
-		return false;
-	}
-	else
-	{
-		return true;
-	}
-
 }
 
 void State::unmakeMove(const Move move)
 {
+	m_enpassantSquare = m_lastEnpassantSquare;
 
-} //TODO: impliment
+	const std::size_t source{ move.source() };
+
+	if (move.castle())
+	{
+		m_castleRights = m_lastCastleRights;
+
+		if (m_whiteToMove)
+		{
+			moveQuiet(KING, source, e1);
+
+			if (source == g1)
+			{
+				moveQuiet(ROOK, f1, h1);
+			}
+			else
+			{
+				moveQuiet(ROOK, d1, a1);
+			}
+		}
+		else
+		{
+			moveQuiet(BKING, source, e8);
+
+			if (source == g8)
+			{
+				moveQuiet(BROOK, f8, h8);
+			}
+			else
+			{
+				moveQuiet(BROOK, d8, a8);
+			}
+		}
+	}
+	else
+	{
+		const std::size_t target{ move.target() };
+		const Piece capture{ move.capture() };
+
+		setCastleRights(source);
+		setCastleRights(target);
+
+		//captures
+		if (capture != Piece::NO_PIECE)
+		{
+			if (move.promoted())
+			{
+				setPiece(m_whiteToMove ? Piece::PAWN : Piece::BPAWN, source);
+				setPiece(capture, target);
+				popPiece(move.piece(), target);
+			}
+			else if (move.enpassant())
+			{
+				if (m_whiteToMove)
+				{
+					setPiece(Piece::BPAWN, target + 8);
+					moveQuiet(Piece::PAWN, target, source);
+				}
+				else
+				{
+					setPiece(Piece::PAWN, target - 8);
+					moveQuiet(Piece::BPAWN, target, source);
+				}
+			}
+			else
+			{
+				moveQuiet(move.piece(), target, source);
+				setPiece(capture, target);
+			}
+		}
+		//quiets
+		else
+		{
+			if (move.doublePawnPush())
+			{
+				moveQuiet(m_whiteToMove ? PAWN : BPAWN, target, source);
+			}
+			else if (move.promoted())
+			{
+				setPiece(m_whiteToMove ? Piece::PAWN : Piece::BPAWN, source);
+				popPiece(move.piece(), target);
+			}
+			else
+			{
+				moveQuiet(move.piece(), target, source);
+			}
+		}
+	}
+}
 
 void State::flipSide()
 {

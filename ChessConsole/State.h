@@ -15,7 +15,9 @@ private:
 	std::array<BitBoard, 12>	m_positions;
 	std::array<BitBoard, 3>		m_occupancy;
 	std::uint8_t				m_castleRights;
+	std::uint8_t				m_lastCastleRights;
 	std::size_t					m_enpassantSquare;
+	std::size_t					m_lastEnpassantSquare;
 	bool						m_whiteToMove;
 
 
@@ -27,7 +29,7 @@ private:
 
 	void moveQuiet(const Piece piece, const std::size_t source, const std::size_t target);
 
-	void moveCapture(const std::size_t source, const std::size_t target, Piece capturedPiece);
+	void moveCapture(const std::size_t source, const std::size_t target, Piece piece, Piece capturedPiece);
 
 	void popSquare(const std::size_t square);
 
@@ -64,7 +66,7 @@ public:
 
 	void setEnpassantSquare(const std::size_t square);
 
-	bool makeMove(const Move move);
+	void makeMove(const Move move);
 
 	void unmakeMove(const Move move);
 
