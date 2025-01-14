@@ -55,8 +55,6 @@ public:
 
 	Piece testPieceType(const std::size_t square) const;
 
-	bool kingInCheck() const;
-
 	bool testCastleRights(const Castle C) const;
 
 

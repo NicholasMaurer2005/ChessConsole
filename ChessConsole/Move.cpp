@@ -1,64 +1,80 @@
 #include "Move.h"
 
 
+//constructors
+
 //pawn promoted
 Move::Move(const std::size_t source, const std::size_t target, const Piece piece, const Piece captured_piece, const bool capture)
 {
-	constexpr std::uint8_t promote_score = 100;
+	constexpr std::uint32_t score = 100;
 
 	if (capture)
 	{
 		//score is mvv_lva + promote_score
 		m_data = static_cast<uint32_t>(source)
 			| (static_cast<std::uint32_t>(target) << target_shift)
-			| (static_cast<std::uint32_t>(piece) << piece_shift)
 			| (static_cast<std::uint32_t>(single_bit) << promoted_shift)
-			| (static_cast<std::uint32_t>(single_bit) << capture_shift)
-			| ((promote_score + mvv_lva[Piece::PAWN][captured_piece]) << value_shift);
+			| (static_cast<std::uint32_t>(piece) << piece_shift)
+			| (static_cast<std::uint32_t>(captured_piece) << capture_shift)
+			| ((score + mvv_lva[Piece::PAWN][captured_piece]) << value_shift);
 	}
 	else
 	{
 		//score is promote score
 		m_data = static_cast<uint32_t>(source)
 			| (static_cast<std::uint32_t>(target) << target_shift)
-			| (static_cast<std::uint32_t>(piece) << piece_shift)
 			| (static_cast<std::uint32_t>(single_bit) << promoted_shift)
-			| (promote_score << value_shift);
+			| (static_cast<std::uint32_t>(piece) << piece_shift)
+			| (static_cast<std::uint32_t>(Piece::NO_PIECE) << capture_shift)
+			| (score << value_shift);
 	}
 }
 
-//enpassant //TODO: enpassant is always pawn capturing pawn
+//enpassant 
 Move::Move(const std::size_t source, const std::size_t target, const Piece captured_piece)
 {
 	//score is mvv_lva
-	m_data = static_cast<uint32_t>(source) 
-		| (static_cast<std::uint32_t>(target) << target_shift) 
-		| (static_cast<std::uint32_t>(single_bit) << enpassant_shift) 
-		| (mvv_lva[Piece::PAWN][Piece::PAWN] << value_shift);
+	if (captured_piece == Piece::PAWN)
+	{
+		//black capture
+		m_data = static_cast<uint32_t>(source)
+			| (static_cast<std::uint32_t>(target) << target_shift)
+			| (static_cast<std::uint32_t>(single_bit) << enpassant_shift)
+			| (static_cast<std::uint32_t>(Piece::BPAWN) << piece_shift)
+			| (mvv_lva[Piece::BPAWN][Piece::PAWN] << value_shift);
+	}
+	else
+	{
+		//white capture
+		m_data = static_cast<uint32_t>(source)
+			| (static_cast<std::uint32_t>(target) << target_shift)
+			| (static_cast<std::uint32_t>(single_bit) << enpassant_shift)
+			| (static_cast<std::uint32_t>(Piece::PAWN) << piece_shift)
+			| (mvv_lva[Piece::PAWN][Piece::BPAWN] << value_shift);
+	}
 }
 
 //castle
 Move::Move(const std::size_t square)
 {
-	constexpr std::uint8_t byte_score = 1;
+	constexpr std::uint32_t score = 1;
 
 	//score is 1
 	m_data = static_cast<uint32_t>(square) 
 		| (static_cast<std::uint32_t>(single_bit) << castle_shift) 
-		| (byte_score << value_shift);
+		| (score << value_shift);
 }
 
 //double pawn push
-Move::Move(const std::size_t source, const std::size_t target) //arbitrary bool to call constructor
+Move::Move(const std::size_t source, const std::size_t target)
 {
-	constexpr std::uint8_t byte_score = 2;
+	constexpr std::uint32_t score = 2;
 
 	//score is 2
 	m_data = static_cast<uint32_t>(source) 
 		| (static_cast<std::uint32_t>(target) << target_shift) 
-		| (static_cast<std::uint32_t>(Piece::PAWN) << piece_shift) 
 		| (static_cast<std::uint32_t>(single_bit) << double_shift) 
-		| (byte_score << value_shift);
+		| (score << value_shift);
 }
 
 //other 
@@ -66,28 +82,31 @@ Move::Move(const std::size_t source, const std::size_t target, const Piece piece
 {
 	if (captured_piece == Piece::NO_PIECE)
 	{
-		//move score is 0
-		m_data = static_cast<uint32_t>(source)
-			| (static_cast<std::uint32_t>(target) << target_shift)
-			| (static_cast<std::uint32_t>(piece) << piece_shift);
-	}
-	else
-	{
-		//move score is mvv_lva
+		//score is 0
 		m_data = static_cast<uint32_t>(source)
 			| (static_cast<std::uint32_t>(target) << target_shift)
 			| (static_cast<std::uint32_t>(piece) << piece_shift)
-			| (static_cast<std::uint32_t>(single_bit) << capture_shift)
+			| (static_cast<std::uint32_t>(Piece::NO_PIECE) << capture_shift);
+	}
+	else
+	{
+		//score is mvv_lva
+		m_data = static_cast<uint32_t>(source)
+			| (static_cast<std::uint32_t>(target) << target_shift)
+			| (static_cast<std::uint32_t>(piece) << piece_shift)
+			| (static_cast<std::uint32_t>(captured_piece) << capture_shift)
 			| (mvv_lva[piece][captured_piece] << value_shift);
 
 	}
 }
 
+//default
 Move::Move()
 	: m_data() {}
 
 
 
+//getters
 std::size_t Move::source() const
 {
 	const std::size_t source_data{ static_cast<std::size_t>(m_data & source_mask) };
@@ -100,22 +119,10 @@ std::size_t Move::target() const
 	return target_data;
 }
 
-Piece Move::piece() const
-{
-	const Piece data{ static_cast<Piece>((m_data & piece_mask) >> piece_shift) };
-	return data;
-}
-
 bool Move::promoted() const
 {
 	const bool promoted_data{ static_cast<bool>((m_data & promoted_mask)) };
 	return promoted_data;
-}
-
-bool Move::capture() const
-{
-	const bool capture_data{ static_cast<bool>((m_data & capture_mask)) };
-	return capture_data;
 }
 
 bool Move::enpassant() const
@@ -124,10 +131,28 @@ bool Move::enpassant() const
 	return enpassant_data;
 }
 
+bool Move::doublePawnPush() const
+{
+	const bool castle_data{ static_cast<bool>((m_data & double_mask)) };
+	return castle_data;
+}
+
 bool Move::castle() const
 {
 	const bool castle_data{ static_cast<bool>((m_data & castle_mask)) };
 	return castle_data;
+}
+
+Piece Move::piece() const
+{
+	const Piece data{ static_cast<Piece>((m_data & piece_mask) >> piece_shift) };
+	return data;
+}
+
+Piece Move::capture() const
+{
+	const Piece capture_data{ static_cast<Piece>((m_data & capture_mask) >> capture_shift) };
+	return capture_data;
 }
 
 std::uint32_t Move::value() const
@@ -136,12 +161,9 @@ std::uint32_t Move::value() const
 	return value_data;
 }
 
-bool Move::doublePawnPush() const
-{
-	const bool castle_data{ static_cast<bool>((m_data & double_mask)) };
-	return castle_data;
-}
 
+
+//helpers
 void Move::print() const
 {
 	const std::size_t source_p{ source() };

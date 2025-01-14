@@ -112,8 +112,33 @@ Piece State::testPieceType(const std::size_t square) const
 
 bool State::kingInCheck() const
 {
+	if (m_whiteToMove)
+	{
+		const std::size_t king_square = m_positions[Piece::KING].find_1lsb();
 
-}//TODO Impliment
+		if (king_square == SIZE_MAX)
+		{
+			return true;
+		}
+		else
+		{
+			return m_moveGen.isSquareAttacked(state, king_square, Color::WHITE);
+		}
+	}
+	else
+	{
+		const std::size_t king_square = state.positions()[BKING].find_1lsb();
+
+		if (king_square == SIZE_MAX)
+		{
+			return true;
+		}
+		else
+		{
+			return m_moveGen.isSquareAttacked(state, king_square, Color::BLACK);
+		}
+	}
+}
 
 bool State::testCastleRights(const Castle C) const
 {
