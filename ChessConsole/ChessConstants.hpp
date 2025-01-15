@@ -30,8 +30,8 @@ constexpr bool USING_PREGENERATED_MAGICS = true;
 constexpr bool PRINT_GENERATED_MAGICS = false;
 constexpr bool ENGINE_PLAY_ITSELF = false;
 
-const std::string start_position_fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
-const std::string tricky_position_fen = "r3k2r/p11pqpb1/bn2pnp1/2pPN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R";
+constexpr std::string_view start_position_fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
+constexpr std::string_view tricky_position_fen = "r3k2r/p11pqpb1/bn2pnp1/2pPN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R";
 
 //most valuable victim - least valuable aggressor [capturing piece][captured piece]
 constexpr std::array<std::array<std::uint8_t, PIECE_COUNT>, PIECE_COUNT> mvv_lva = {{
@@ -66,7 +66,7 @@ enum Piece {
 	NO_PIECE = 12
 };
 
-constexpr std::array<std::size_t, 128> create_char_to_piece()
+consteval std::array<std::size_t, 128> create_char_to_piece()
 {
 	std::array< std::size_t, 128> table = { 0 };
 	table['P'] = Piece::PAWN;
