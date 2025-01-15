@@ -150,28 +150,36 @@ void Engine::step(const bool engine_side_white, const bool flip_board, const std
 		}
 		else
 		{
-
-			//player move
-			MoveList list;
-			m_moveGen.generateMoves(m_state, list);
-
-			Move move;
-
-			while (true)
-			{
-				if (inputAndParseMove(list, move))
-				{
-					move.print();
-
-					if (makeLegal(m_state, move))
-					{
-						break;
-					}
-				}
-
-				std::cout << "move does not exist" << std::endl;
+			if (ENGINE_PLAY_ITSELF)
+			{ 
+				//engine move
+				std::cout << "thinking" << std::endl;
+				negamax(m_state, m_depth, INT_MIN, INT_MAX);
+				makeLegal(m_state, m_bestMove);
 			}
-			
+			else
+			{
+				//player move
+				MoveList list;
+				m_moveGen.generateMoves(m_state, list);
+
+				Move move;
+
+				while (true)
+				{
+					if (inputAndParseMove(list, move))
+					{
+						move.print();
+
+						if (makeLegal(m_state, move))
+						{
+							break;
+						}
+					}
+
+					std::cout << "move does not exist" << std::endl;
+				}
+			}
 		}
 
 		const auto end_time = std::chrono::high_resolution_clock::now();
