@@ -4,10 +4,6 @@ set(CMAKE_SYSTEM_VERSION 10.0 CACHE STRING "" FORCE)
 
 project(ChessConsole CXX)
 
-set(CMAKE_CXX_STANDARD 23)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
-
 add_executable(ChessConsole
         ChessConsole/BitBoard.cpp  ChessConsole/Move.cpp
         ChessConsole/PreGen.cpp    ChessConsole/Engine.cpp
@@ -15,3 +11,5 @@ add_executable(ChessConsole
         ChessConsole/Main.cpp      ChessConsole/MoveList.cpp
         ChessConsole/State.cpp
 )
+target_compile_features(ChessConsole PUBLIC cxx_std_23)
+set_property(TARGET ChessConsole PROPERTY CXX_EXTENSIONS OFF)
