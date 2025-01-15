@@ -169,7 +169,7 @@ void Move::print() const
 	const std::size_t source_p{ source() };
 	const std::size_t target_p{ target() };
 	const bool promoted_p{ promoted() };
-	const bool capture_p{ capture() };
+	const bool capture_p{ !(capture() == Piece::NO_PIECE) };
 	const bool enpassant_p{ enpassant() };
 	const bool castle_p{ castle() };
 

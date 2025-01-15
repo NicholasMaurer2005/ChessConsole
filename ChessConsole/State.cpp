@@ -304,6 +304,7 @@ void State::unmakeMove(const Move move)
 				setPiece(capture, target);
 			}
 		}
+
 		//quiets
 		else
 		{

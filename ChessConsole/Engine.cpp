@@ -108,7 +108,7 @@ int Engine::negamax(State& state, const std::uint32_t depth, int alpha, int beta
 
 void Engine::step(const bool engine_side_white, const bool flip_board, const std::uint32_t depth)
 {
-	m_state.printBoard(flip_board);
+	m_state.printBoard(flip_board, no_sqr);
 	m_depth = depth;
 
 	while (true)
@@ -119,50 +119,39 @@ void Engine::step(const bool engine_side_white, const bool flip_board, const std
 		{
 			//engine move
 			std::cout << "thinking" << std::endl;
-			minimax(m_state, m_depth, INT_MIN, INT_MAX);
-			makeMove(m_bestMove, m_state);
+			negamax(m_state, m_depth, INT_MIN, INT_MAX);
+			makeLegal(m_state, m_bestMove);
 		}
 		else
 		{
-			if constexpr (ENGINE_PLAY_ITSELF)
-			{
-				//engine move
-				std::cout << "thinking" << std::endl;
-				minimax(m_state, m_depth, INT_MIN, INT_MAX);
-				makeMove(m_bestMove, m_state);
-			}
-			else
-			{
-				//player move
-				MoveList list;
-				m_moveGen.generateMoves(m_state, list);
+			//player move
+			MoveList list;
+			m_moveGen.generateMoves(m_state, list);
 
-				Move move;
-				while (true)
+			Move move;
+
+			while (true)
+			{
+				if (inputAndParseMove(list, move))
 				{
-					if (inputAndParseMove(list, move))
+					move.print();
+
+					if (makeLegal(m_state, move))
 					{
-						State new_state{ m_state };
-						new_state.printBoard(flip_board);
-						move.print();
-
-						if (makeMove(move, new_state))
-						{
-							m_state = new_state;
-							break;
-						}
+						break;
 					}
-
-					std::cout << "move does not exist" << std::endl;
 				}
+
+				std::cout << "move does not exist" << std::endl;
 			}
+			
 		}
 
 		const auto end_time = std::chrono::high_resolution_clock::now();
 
 		const std::chrono::duration<double> duration = end_time - start_time;
 		system("cls");
-		m_state.printBoard(flip_board);
+		m_state.printBoard(flip_board, no_sqr);
 
 		std::cout << "move: ";
 		m_bestMove.print();
