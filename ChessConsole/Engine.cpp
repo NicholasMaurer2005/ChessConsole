@@ -115,15 +115,42 @@ void Engine::step(const bool engine_side_white, const bool flip_board, const std
 	{
 		const auto start_time = std::chrono::high_resolution_clock::now();
 
-		if (m_state.whiteToMove() == engine_side_white)
+		if (m_state.whiteToMove() == engine_side_white)//TODO: clean up
 		{
-			//engine move
-			std::cout << "thinking" << std::endl;
-			negamax(m_state, m_depth, INT_MIN, INT_MAX);
-			makeLegal(m_state, m_bestMove);
+			if constexpr (PLAYER_PLAY_ITSELF)
+			{
+				//player move
+				MoveList list;
+				m_moveGen.generateMoves(m_state, list);
+
+				Move move;
+
+				while (true)
+				{
+					if (inputAndParseMove(list, move))
+					{
+						move.print();
+
+						if (makeLegal(m_state, move))
+						{
+							break;
+						}
+					}
+
+					std::cout << "move does not exist" << std::endl;
+				}
+			}
+			else
+			{
+				//engine move
+				std::cout << "thinking" << std::endl;
+				negamax(m_state, m_depth, INT_MIN, INT_MAX);
+				makeLegal(m_state, m_bestMove);
+			}
 		}
 		else
 		{
+
 			//player move
 			MoveList list;
 			m_moveGen.generateMoves(m_state, list);
