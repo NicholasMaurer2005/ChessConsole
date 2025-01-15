@@ -4,7 +4,6 @@
 #include "BitBoard.h"
 #include <array>
 #include <vector>
-#include <intrin.h>
 #include <iostream>
 #include "Random.h"
 #include <unordered_set>

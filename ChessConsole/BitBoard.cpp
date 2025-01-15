@@ -1,4 +1,5 @@
 #include "BitBoard.h"
+#include <bit>
 
 BitBoard::BitBoard()
 	: m_board() {}
@@ -36,14 +37,16 @@ void BitBoard::print() const
 
 std::size_t BitBoard::bitCount() const
 {
-	return __popcnt64(m_board); //impliment
+	return ::std::popcount(m_board);
 }
 
 size_t BitBoard::find_1lsb() const
 {
-	unsigned long index{};
+	auto const index = ::std::countr_zero(m_board);
+	constexpr decltype(m_board) zero = 0;
+	constexpr auto max = ::std::countr_zero(zero);
 
-	if (_BitScanForward64(&index, m_board))
+	if (index < max)
 	{
 		return static_cast<std::size_t>(index);
 	}

@@ -24,7 +24,7 @@ private:
 
 	bool m_stopSearch;
 	int m_timeCheckCount;
-	std::chrono::steady_clock::time_point m_searchStartTime;
+	std::chrono::high_resolution_clock::time_point m_searchStartTime;
 
 	std::uint32_t m_depthSearched;
 	std::uint32_t m_evaluations;

@@ -4,7 +4,6 @@
 #include "ChessConstants.hpp"
 #include <iostream>
 #include <array>
-#include <intrin.h>
 #include <cstddef>
 
 struct BitBoard

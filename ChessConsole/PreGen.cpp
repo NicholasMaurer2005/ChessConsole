@@ -1,5 +1,5 @@
 #include "PreGen.h"
-
+#include <bit>
 
 
 PreGen::PreGen()
@@ -225,7 +225,7 @@ void PreGen::createBishopBitCount()
 {
 	for (std::size_t i{}; i < MAX_BOARD_POSITIONS; i++)
 	{
-		m_bishopBitCount[i] = (__popcnt64(m_bishopRelevantBits[i].board()));
+		m_bishopBitCount[i] = (::std::popcount(m_bishopRelevantBits[i].board()));
 	}
 }
 
@@ -233,7 +233,7 @@ void PreGen::createRookBitCount()
 {
 	for (std::size_t i{}; i < MAX_BOARD_POSITIONS; i++)
 	{
-		m_rookBitCount[i] = (__popcnt64(m_rookRelevantBits[i].board()));
+		m_rookBitCount[i] = (::std::popcount(m_rookRelevantBits[i].board()));
 	}
 }
 
@@ -372,7 +372,7 @@ std::uint64_t PreGen::findMagicNumber(const std::size_t square, const Piece piec
 
 	const std::uint64_t mask{ piece == Piece::BISHOP ? m_bishopRelevantBits[square].board() : m_rookRelevantBits[square].board() };
 
-	const std::size_t num_bits{ static_cast<std::size_t>(__popcnt64(mask)) };
+	const std::size_t num_bits{ static_cast<std::size_t>(::std::popcount(mask)) };
 	const std::size_t num_occupancies{ single_bit << num_bits };
 
 	const std::vector<BitBoard> occupancies{ createOccupancies(mask, num_bits, num_occupancies) };
@@ -382,7 +382,7 @@ std::uint64_t PreGen::findMagicNumber(const std::size_t square, const Piece piec
 		const std::uint64_t magic{ rnd.next_uint64_minbits() };
 
 		//skip inappropriate magic numbers
-		/*if (__popcnt64((mask * magic) & 0xFF00000000000000ULL) < 6)
+		/*if (::std::popcount((mask * magic) & 0xFF00000000000000ULL) < 6)
 		{
 			continue;
 		}*/

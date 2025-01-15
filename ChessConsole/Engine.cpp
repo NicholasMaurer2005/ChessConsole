@@ -42,6 +42,8 @@ int Engine::evaluate(const State& state)
 
 int Engine::minimax(const State& state, const std::uint32_t depth, int alpha, int beta)
 {
+	auto constexpr INT_MAX = std::numeric_limits<int>::max();
+	auto constexpr INT_MIN = std::numeric_limits<int>::min();
 	m_nodes++;
 
 	if (depth == 0)
@@ -220,7 +222,7 @@ void Engine::iterativeMinimax(const State& state)
 	while (!m_stopSearch)
 	{
 		m_depth = depth;
-		minimax(m_state, depth, INT_MIN, INT_MAX);
+		minimax(m_state, depth, ::std::numeric_limits<decltype(depth)>::min(), ::std::numeric_limits<decltype(depth)>::min());
 		m_depthSearched = depth; //TODO: fix these vars there should only be one
 		depth++;
 
@@ -320,7 +322,6 @@ void Engine::step(const bool engine_side_white, const bool flip_board, const std
 		const auto end_time = std::chrono::high_resolution_clock::now();
 		const std::chrono::duration<double> duration = end_time - start_time;
 
-		system("cls");
 		m_state.printBoard(flip_board, m_moveSource);
 
 		std::cout << "move: ";
