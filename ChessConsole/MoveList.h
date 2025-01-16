@@ -9,97 +9,97 @@
 class MoveList
 {
 private:
-	std::vector<Move> m_moves;
+    std::vector<Move> m_moves;
 
-	std::size_t m_count;
+    std::size_t m_count;
 
 public:
-	MoveList();
+    MoveList();
 
-	const std::vector<Move>& moves() const;
+    const std::vector<Move>& moves() const;
 
-	std::size_t count() const;
-	
-	void popMove(const std::size_t move_index);
+    std::size_t count() const;
 
-	bool findMove(const std::size_t source, const std::size_t target, Move& move_out) const;
+    void popMove(const std::size_t move_index);
 
-	bool findCastleMove(const std::size_t source) const;
+    bool findMove(const std::size_t source, const std::size_t target, Move& move_out) const;
 
-	void sortMoveList();
+    bool findCastleMove(const std::size_t source) const;
 
-	static bool move_compare(const Move a, const Move b);
+    void sortMoveList();
 
-	void printMoves() const;
+    static bool move_compare(const Move a, const Move b);
 
-	template<MoveType M, Piece P>
-	void addMove(const std::size_t source, const std::size_t target, const Piece captured_piece)
-	{
-		if constexpr (M == MoveType::CAPTURE) //TODO: restructure
-		{
-			if constexpr (P == Piece::PAWN)
-			{
-				//pawn capture
-				m_moves.emplace_back(source, target, Piece::PAWN, captured_piece);
-			}
-			else
-			{
-				//regular capture
-				m_moves.emplace_back(source, target, P, captured_piece);
-			}
-		}
+    void printMoves() const;
 
-		if constexpr (M == MoveType::QUIET)
-		{
-			//regular quiet
-			m_moves.emplace_back(source, target, P, Piece::NO_PIECE);
-		}
+    template<MoveType M, Piece P>
+    void addMove(const std::size_t source, const std::size_t target, const Piece captured_piece)
+    {
+        if constexpr (M == MoveType::CAPTURE) //TODO: restructure
+        {
+            if constexpr (P == Piece::PAWN)
+            {
+                //pawn capture
+                m_moves.emplace_back(source, target, Piece::PAWN, captured_piece);
+            }
+            else
+            {
+                //regular capture
+                m_moves.emplace_back(source, target, P, captured_piece);
+            }
+        }
 
-		if constexpr (M == MoveType::QUIET_PROMOTE)
-		{
-			//quiet promote
-			m_moves.emplace_back(source, target, P, Piece::NO_PIECE, false);
-		}
+        if constexpr (M == MoveType::QUIET)
+        {
+            //regular quiet
+            m_moves.emplace_back(source, target, P, Piece::NO_PIECE);
+        }
 
-		if constexpr (M == MoveType::PROMOTE)
-		{
-			//capture and promote
-			m_moves.emplace_back(source, target, P, captured_piece, true);
-		}
+        if constexpr (M == MoveType::QUIET_PROMOTE)
+        {
+            //quiet promote
+            m_moves.emplace_back(source, target, P, Piece::NO_PIECE, false);
+        }
 
-		if constexpr (M == MoveType::ENPASSANT)
-		{
-			//enpassant
-			m_moves.emplace_back(source, target, captured_piece);
-		}
+        if constexpr (M == MoveType::PROMOTE)
+        {
+            //capture and promote
+            m_moves.emplace_back(source, target, P, captured_piece, true);
+        }
 
-		if constexpr (M == MoveType::DOUBLE_PAWN)
-		{
-			m_moves.emplace_back(source, target);
-		}
-	}
+        if constexpr (M == MoveType::ENPASSANT)
+        {
+            //enpassant
+            m_moves.emplace_back(source, target, captured_piece);
+        }
 
-	template <Castle C>
-	void addCastleMove()
-	{
-		if constexpr (C == Castle::BK)
-		{
-			m_moves.emplace_back(g8);
-		}
+        if constexpr (M == MoveType::DOUBLE_PAWN)
+        {
+            m_moves.emplace_back(source, target);
+        }
+    }
 
-		if constexpr (C == Castle::BQ)
-		{
-			m_moves.emplace_back(c8);
-		}
+    template <Castle C>
+    void addCastleMove()
+    {
+        if constexpr (C == Castle::BK)
+        {
+            m_moves.emplace_back(g8);
+        }
 
-		if constexpr (C == Castle::WK)
-		{
-			m_moves.emplace_back(g1);
-		}
+        if constexpr (C == Castle::BQ)
+        {
+            m_moves.emplace_back(c8);
+        }
 
-		if constexpr (C == Castle::WQ)
-		{
-			m_moves.emplace_back(c1);
-		}
-	}
+        if constexpr (C == Castle::WK)
+        {
+            m_moves.emplace_back(g1);
+        }
+
+        if constexpr (C == Castle::WQ)
+        {
+            m_moves.emplace_back(c1);
+        }
+    }
 };
