@@ -33,7 +33,7 @@ private:
 
 	void popSquare(const std::size_t square);
 
-
+	
 
 public:
 

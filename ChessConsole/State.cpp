@@ -143,7 +143,6 @@ void State::makeMove(const Move move)
 
 	if (move.castle())
 	{
-
 		if (m_whiteToMove)
 		{
 			moveQuiet(Piece::KING, e1, source);
@@ -214,7 +213,7 @@ void State::makeMove(const Move move)
 		else
 		{
 			if (move.doublePawnPush())
-			{//TODO: we know its a pawn we dont have to loop through pieces
+			{
 				moveQuiet(m_whiteToMove ? Piece::PAWN : Piece::BPAWN, source, target);
 				setEnpassantSquare(m_whiteToMove ? source - 8 : source + 8);
 			}
@@ -281,7 +280,7 @@ void State::unmakeMove(const Move move)
 		{
 			if (move.promoted())
 			{
-				setPiece(m_whiteToMove ? Piece::PAWN : Piece::BPAWN, source);
+				setPiece(m_whiteToMove ? Piece::BPAWN : Piece::PAWN, source);
 				setPiece(capture, target);
 				popPiece(move.piece(), target);
 			}
@@ -310,11 +309,11 @@ void State::unmakeMove(const Move move)
 		{
 			if (move.doublePawnPush())
 			{
-				moveQuiet(m_whiteToMove ? PAWN : BPAWN, target, source);
+				moveQuiet(m_whiteToMove ? BPAWN : PAWN, target, source);
 			}
 			else if (move.promoted())
 			{
-				setPiece(m_whiteToMove ? Piece::PAWN : Piece::BPAWN, source);
+				setPiece(m_whiteToMove ? Piece::BPAWN : Piece::PAWN, source);
 				popPiece(move.piece(), target);
 			}
 			else

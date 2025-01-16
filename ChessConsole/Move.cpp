@@ -40,7 +40,7 @@ Move::Move(const std::size_t source, const std::size_t target, const Piece captu
 		m_data = static_cast<uint32_t>(source)
 			| (static_cast<std::uint32_t>(target) << target_shift)
 			| (static_cast<std::uint32_t>(single_bit) << enpassant_shift)
-			| (static_cast<std::uint32_t>(Piece::BPAWN) << piece_shift)
+			| (static_cast<std::uint32_t>(Piece::PAWN) << piece_shift)
 			| (mvv_lva[Piece::BPAWN][Piece::PAWN] << value_shift);
 	}
 	else
@@ -49,7 +49,7 @@ Move::Move(const std::size_t source, const std::size_t target, const Piece captu
 		m_data = static_cast<uint32_t>(source)
 			| (static_cast<std::uint32_t>(target) << target_shift)
 			| (static_cast<std::uint32_t>(single_bit) << enpassant_shift)
-			| (static_cast<std::uint32_t>(Piece::PAWN) << piece_shift)
+			| (static_cast<std::uint32_t>(Piece::BPAWN) << piece_shift)
 			| (mvv_lva[Piece::PAWN][Piece::BPAWN] << value_shift);
 	}
 }
@@ -74,6 +74,7 @@ Move::Move(const std::size_t source, const std::size_t target)
 	m_data = static_cast<uint32_t>(source) 
 		| (static_cast<std::uint32_t>(target) << target_shift) 
 		| (static_cast<std::uint32_t>(single_bit) << double_shift) 
+		| (static_cast<std::uint32_t>(Piece::NO_PIECE) << capture_shift) 
 		| (score << value_shift);
 }
 

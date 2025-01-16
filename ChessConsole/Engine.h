@@ -9,8 +9,6 @@
 #include <algorithm>
 #include <chrono>
 
-using namespace std::literals::string_literals;
-
 class Engine
 {
 private:

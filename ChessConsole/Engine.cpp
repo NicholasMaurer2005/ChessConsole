@@ -41,7 +41,7 @@ int Engine::evaluate(const State& state)
 
 int queiscence(const State& state, int alpha, int beta)
 {
-
+	return 0;
 }
 
 int Engine::negamax(State& state, const std::uint32_t depth, int alpha, int beta) //alpha = INT_MIN, beta = INT_MAX in initial call
@@ -129,10 +129,10 @@ void Engine::step(const bool engine_side_white, const bool flip_board, const std
 				{
 					if (inputAndParseMove(list, move))
 					{
-						move.print();
-
 						if (makeLegal(m_state, move))
 						{
+							move.print();
+							m_bestMove = move;
 							break;
 						}
 					}
@@ -169,10 +169,10 @@ void Engine::step(const bool engine_side_white, const bool flip_board, const std
 				{
 					if (inputAndParseMove(list, move))
 					{
-						move.print();
-
 						if (makeLegal(m_state, move))
 						{
+							move.print();
+							m_bestMove = move;
 							break;
 						}
 					}
@@ -256,11 +256,18 @@ void Engine::printAllBoardAttacks(Color C) const
 
 bool Engine::inputAndParseMove(MoveList& list, Move& move)
 {
+	using namespace std::literals::string_literals;
+
 	std::string input;
 	std::getline(std::cin, input);
 	//std::transform(input.begin(), input.end(), input.begin(), ::tolower);
 
-	if (input == "wk"s)
+
+	if (input == "tb"s)
+	{
+		m_state.unmakeMove(m_bestMove);
+	}
+	else if (input == "wk"s)
 	{
 		if (list.findCastleMove(g1))
 		{
