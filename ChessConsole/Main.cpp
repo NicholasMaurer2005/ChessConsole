@@ -7,7 +7,7 @@ to store every reusable number. I tried my best to use the correct data type for
 dont need negative numbers, and std::size_t whenever I'm accessing an array or inside a for loop. The entire code runs on the stack.
 Finally, I make use of the mostmodern c++ featurs and try to use the most modern approach.
 
-The only thing wrong with the code is I was very inconsistent with my naming convention. For some reason, I kept switching back
+The only thing wrong with the code is I was very inconsistent with my naming convention. For some reason, I kept switching back
 and forth between snake-case and camel-case. I honestly don't know what I was thinking there seems to be no reason why I used
 one over the other, but hey it is old code.
 
