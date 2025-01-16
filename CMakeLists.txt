@@ -11,5 +11,5 @@ add_executable(ChessConsole
         ChessConsole/Main.cpp      ChessConsole/MoveList.cpp
         ChessConsole/State.cpp
 )
-target_compile_features(ChessConsole PUBLIC cxx_std_23)
+target_compile_features(ChessConsole PUBLIC cxx_std_20)
 set_property(TARGET ChessConsole PROPERTY CXX_EXTENSIONS OFF)
