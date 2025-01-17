@@ -47,6 +47,7 @@ int queiscence(const State& state, int alpha, int beta)
 int Engine::negamax(State& state, const std::uint32_t depth, int alpha, int beta) //alpha = INT_MIN, beta = INT_MAX in initial call
 {
 	//time cutoff logic
+	m_nodes++;
 
 	//leaf of search
 	if (depth == 0)
@@ -87,13 +88,26 @@ int Engine::negamax(State& state, const std::uint32_t depth, int alpha, int beta
 
 			//find the best score for all the branches of this move
 			int score{ -negamax(state, depth - 1, -beta, -alpha) };
-			highest_score = std::max(highest_score, score);
 
 			//reset state
-			state.flipSide();
 			state.unmakeMove(move);
+			state.flipSide();
 
-			//alpha-beta pruning, stop searching if a better move is already guarenteed
+			if (score > highest_score)
+			{
+				if (depth == m_depth)
+				{
+					highest_score = score;
+					m_bestMove = move;
+				}
+				else
+				{
+					highest_score = score;
+				}
+			}
+
+
+			//alpha-beta pruning, stop searching if a better move is already guarenteed=
 			alpha = std::max(alpha, score);
 
 			if (alpha >= beta)

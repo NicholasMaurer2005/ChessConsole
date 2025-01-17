@@ -45,7 +45,7 @@ void State::moveQuiet(const Piece piece, const std::size_t source, const std::si
 void State::moveCapture(const std::size_t source, const std::size_t target, Piece piece, Piece capturedPiece)
 {
 	popPiece(capturedPiece, target);
-	moveQuiet(capturedPiece, source, target);
+	moveQuiet(piece, source, target);
 }
 
 void State::popSquare(const std::size_t square)
@@ -288,14 +288,29 @@ void State::unmakeMove(const Move move)
 			{
 				if (m_whiteToMove)
 				{
-					setPiece(Piece::BPAWN, target + 8);
-					moveQuiet(Piece::PAWN, target, source);
-				}
-				else
-				{
 					setPiece(Piece::PAWN, target - 8);
 					moveQuiet(Piece::BPAWN, target, source);
 				}
+				else
+				{
+					setPiece(Piece::BPAWN, target + 8);
+					moveQuiet(Piece::PAWN, target, source);
+				}
+
+			/*else if (move.enpassant())
+			{
+				if (m_whiteToMove)
+				{
+					popPiece(Piece::BPAWN, target + 8);
+					moveQuiet(Piece::PAWN, source, target);
+				}
+				else
+				{
+					popPiece(Piece::PAWN, target - 8);
+					moveQuiet(Piece::BPAWN, source, target);
+				}
+			}*/
+
 			}
 			else
 			{
