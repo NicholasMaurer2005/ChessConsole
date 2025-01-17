@@ -222,7 +222,7 @@ void Engine::iterativeMinimax(const State& state)
     while (!m_stopSearch)
     {
         m_depth = depth;
-        minimax(m_state, depth, ::std::numeric_limits<decltype(depth)>::min(), ::std::numeric_limits<decltype(depth)>::min());
+        minimax(m_state, depth, ::std::numeric_limits<int>::min(), ::std::numeric_limits<int>::max());
         m_depthSearched = depth; //TODO: fix these vars there should only be one
         depth++;
 
