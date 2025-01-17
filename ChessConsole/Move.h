@@ -26,70 +26,70 @@ constexpr std::uint32_t value_mask           { 0b0001111111100000000000000000000
 struct Move
 {
 private:
-	std::uint32_t m_data;
+    std::uint32_t m_data;
 
 public:
-	//pawn promoted         
-	Move(const std::size_t source, const std::size_t target, const Piece piece, const Piece capture_piece, const bool capture);
+    //pawn promoted
+    Move(const std::size_t source, const std::size_t target, const Piece piece, const Piece capture_piece, const bool capture);
 
-	//enpassant
-	Move(const std::size_t source, const std::size_t target, const Piece captured_piece);
+    //enpassant
+    Move(const std::size_t source, const std::size_t target, const Piece captured_piece);
 
-	//castle
-	Move(const std::size_t target);
+    //castle
+    Move(const std::size_t target);
 
-	//double pawn push
-	Move(const std::size_t source, const std::size_t target); 
+    //double pawn push
+    Move(const std::size_t source, const std::size_t target);
 
-	//other         
-	Move(const std::size_t source, const std::size_t target, const Piece piece, const Piece captured_piece);
+    //other
+    Move(const std::size_t source, const std::size_t target, const Piece piece, const Piece captured_piece);
 
-	//default
-	Move();
+    //default
+    Move();
 
-	std::size_t source() const;
+    std::size_t source() const;
 
-	std::size_t target() const;
+    std::size_t target() const;
 
-	Move& operator=(const Move& other);
+    Move& operator=(const Move& other);
 
-	Piece piece() const;
+    Piece piece() const;
 
-	bool promoted() const;
+    bool promoted() const;
 
-	bool capture() const;
+    bool capture() const;
 
-	bool enpassant() const;
+    bool enpassant() const;
 
-	bool castle() const;
+    bool castle() const;
 
-	bool doublePawnPush() const;
+    bool doublePawnPush() const;
 
-	std::uint32_t value() const;
+    std::uint32_t value() const;
 
-	void print() const;
+    void print() const;
 
-	template <Castle C>
-	static Move createCastleMove()
-	{
-		if constexpr (C == Castle::BK)
-		{
-			return Move(g8);
-		}
+    template <Castle C>
+    static Move createCastleMove()
+    {
+        if constexpr (C == Castle::BK)
+        {
+            return Move(g8);
+        }
 
-		if constexpr (C == Castle::BQ)
-		{
-			return Move(c8);
-		}
+        if constexpr (C == Castle::BQ)
+        {
+            return Move(c8);
+        }
 
-		if constexpr (C == Castle::WK)
-		{
-			return Move(g1);
-		}
+        if constexpr (C == Castle::WK)
+        {
+            return Move(g1);
+        }
 
-		if constexpr (C == Castle::WQ)
-		{
-			return Move(c1);
-		}
-	}
+        if constexpr (C == Castle::WQ)
+        {
+            return Move(c1);
+        }
+    }
 };

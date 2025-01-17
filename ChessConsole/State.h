@@ -10,53 +10,53 @@
 struct State
 {
 private:
-	std::array<BitBoard, 12> m_positions;
-	std::array<BitBoard, 3> m_occupancy;
+    std::array<BitBoard, 12> m_positions;
+    std::array<BitBoard, 3> m_occupancy;
 
-	std::uint8_t m_castleRights;
+    std::uint8_t m_castleRights;
 
-	std::size_t m_enpassantSquare;
+    std::size_t m_enpassantSquare;
 
-	bool m_whiteToMove;
+    bool m_whiteToMove;
 
 public:
-	State();
+    State();
 
-	State(const State& state);
+    State(const State& state);
 
-	const std::array<BitBoard, 12>& positions() const;
+    const std::array<BitBoard, 12>& positions() const;
 
-	const std::array<BitBoard, 3>& occupancy() const;
+    const std::array<BitBoard, 3>& occupancy() const;
 
-	Piece testPieceType(const std::size_t square) const;
+    Piece testPieceType(const std::size_t square) const;
 
-	std::uint8_t castleRights() const;
+    std::uint8_t castleRights() const;
 
-	void setCastleRights(std::size_t square);
+    void setCastleRights(std::size_t square);
 
-	bool testCastleRights(const Castle C) const;
+    bool testCastleRights(const Castle C) const;
 
-	std::size_t enpassantSquare() const;
+    std::size_t enpassantSquare() const;
 
-	void setEnpassantSquare(const std::size_t square);
+    void setEnpassantSquare(const std::size_t square);
 
-	bool whiteToMove() const;
+    bool whiteToMove() const;
 
-	void flipSide();
+    void flipSide();
 
-	void printBoard(const bool flipped, const std::size_t source_square) const;
+    void printBoard(const bool flipped, const std::size_t source_square) const;
 
-	void setPiece(const Piece P, const std::size_t square);
+    void setPiece(const Piece P, const std::size_t square);
 
-	void popPiece(const Piece P, const std::size_t square);
+    void popPiece(const Piece P, const std::size_t square);
 
-	void popSquare(const std::size_t square);
+    void popSquare(const std::size_t square);
 
-	void moveQuiet(const Piece P, const std::size_t source, const std::size_t target);
+    void moveQuiet(const Piece P, const std::size_t source, const std::size_t target);
 
-	void moveCapture(const Piece P, const std::size_t source, const std::size_t target);
+    void moveCapture(const Piece P, const std::size_t source, const std::size_t target);
 
-	static State parse_fen(const std::string_view fen);
+    static State parse_fen(const std::string_view fen);
 
-	static std::array<std::string, RANK_MAX> split_fen(std::string_view fen);
+    static std::array<std::string, RANK_MAX> split_fen(std::string_view fen);
 };
