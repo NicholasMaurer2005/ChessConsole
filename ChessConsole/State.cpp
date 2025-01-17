@@ -296,21 +296,6 @@ void State::unmakeMove(const Move move)
 					setPiece(Piece::BPAWN, target + 8);
 					moveQuiet(Piece::PAWN, target, source);
 				}
-
-			/*else if (move.enpassant())
-			{
-				if (m_whiteToMove)
-				{
-					popPiece(Piece::BPAWN, target + 8);
-					moveQuiet(Piece::PAWN, source, target);
-				}
-				else
-				{
-					popPiece(Piece::PAWN, target - 8);
-					moveQuiet(Piece::BPAWN, source, target);
-				}
-			}*/
-
 			}
 			else
 			{

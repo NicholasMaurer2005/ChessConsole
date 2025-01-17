@@ -120,6 +120,6 @@ of that game I can't seem to. I think there is something wrong with castling bec
 int main()
 {
 	Engine engine{ start_position_fen };
-	engine.step(true, false, 8); 
+	engine.step(true, false, 4); 
 	//engine.perft(10);
 }
