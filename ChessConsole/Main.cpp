@@ -122,5 +122,5 @@ int main()
 {
 	Engine engine{ start_position_fen };
 	//engine.perft(10);
-	engine.step(true, false, 1); 
+	engine.step(true, false, 10); 
 }
