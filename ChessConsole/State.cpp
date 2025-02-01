@@ -309,7 +309,9 @@ void State::unmakeMove(const Move move)
 		{
 			if (move.doublePawnPush())
 			{
-				moveQuiet(m_whiteToMove ? BPAWN : PAWN, target, source);
+				moveQuiet(m_whiteToMove ? Piece::BPAWN : Piece::PAWN, target, source);
+				printBoard(false, no_sqr);
+				move.print();
 			}
 			else if (move.promoted())
 			{

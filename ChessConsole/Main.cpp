@@ -120,6 +120,7 @@ of that game I can't seem to. I think there is something wrong with castling bec
 int main()
 {
 	Engine engine{ start_position_fen };
+	//Engine engine{ "k7/r7/8/8/8/8/7R/7K"};
 	engine.step(true, false, 4); 
 	//engine.perft(10);
 }

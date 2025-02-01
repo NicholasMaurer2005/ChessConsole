@@ -52,7 +52,6 @@ int Engine::negamax(State& state, const std::uint32_t depth, int alpha, int beta
 	//leaf of search
 	if (depth == 0)
 	{
-		state.printBoard(false, no_sqr);
 		return evaluate(state);
 	}
 
@@ -81,7 +80,10 @@ int Engine::negamax(State& state, const std::uint32_t depth, int alpha, int beta
 
 	for (Move move : moves.moves())
 	{
-		std::uint64_t copy = state.occupancy()[Occupancy::BOTH].board();
+		auto d_source = move.source();
+		auto d_target = move.target();
+
+		State d_copy = state;
 
 		//try to make move and get find highest score
 		if (makeLegal(state, move))
@@ -96,7 +98,19 @@ int Engine::negamax(State& state, const std::uint32_t depth, int alpha, int beta
 			state.unmakeMove(move);
 			state.flipSide();
 
-			std::uint64_t test = state.occupancy()[Occupancy::BOTH].board();
+			State d_test = state;
+
+			if (d_copy.occupancy()[Occupancy::BOTH].board() != d_test.occupancy()[Occupancy::BOTH].board())
+			{
+				/*std::cout << "copy" << std::endl;
+				d_copy.printBoard(false, no_sqr);
+
+				std::cout << "test" << std::endl;
+				d_test.printBoard(false, no_sqr);
+
+				std::cout << "move" << std::endl;
+				move.print();*/
+			}
 
 			if (score > highest_score)
 			{
