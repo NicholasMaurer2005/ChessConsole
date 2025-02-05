@@ -233,13 +233,12 @@ void State::makeMove(const Move move)
 void State::unmakeMove(const Move move)
 {
 	m_enpassantSquare = m_lastEnpassantSquare;
+	m_castleRights = m_lastCastleRights;
 
 	const std::size_t source{ move.source() };
 
 	if (move.castle())
 	{
-		m_castleRights = m_lastCastleRights;
-
 		if (m_whiteToMove)
 		{
 			moveQuiet(KING, source, e1);
@@ -271,9 +270,6 @@ void State::unmakeMove(const Move move)
 	{
 		const std::size_t target{ move.target() };
 		const Piece capture{ move.capture() };
-
-		setCastleRights(source);
-		setCastleRights(target);
 
 		//captures
 		if (capture != Piece::NO_PIECE)

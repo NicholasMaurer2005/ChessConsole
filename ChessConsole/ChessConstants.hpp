@@ -26,7 +26,7 @@ constexpr int           CHECKMATE_SCORE					            = INT_MIN + 1;
 constexpr bool USING_PREGENERATED_MAGICS = true;
 constexpr bool PRINT_GENERATED_MAGICS = false;
 constexpr bool ENGINE_PLAY_ITSELF = false;
-constexpr bool PLAYER_PLAY_ITSELF = false;
+constexpr bool PLAYER_PLAY_ITSELF = true;
 
 constexpr std::string_view start_position_fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
 constexpr std::string_view tricky_position_fen = "r3k2r/p11pqpb1/bn2pnp1/2pPN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R";
