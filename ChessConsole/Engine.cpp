@@ -12,8 +12,240 @@ Engine::Engine(std::string_view fen)
 
 void Engine::setState(std::string_view fen)
 {
-	m_state = State::parse_fen(fen);
+	// m_state = State::parse_fen(fen); // Old version
+	// New version to parse full FEN:
+	std::vector<std::string> parts = State::split_fen(fen);
+	m_state = State::parse_fen(parts[0]); // Piece placements
+
+	if (parts.size() > 1 && !parts[1].empty()) {
+		m_state.setWhiteToMove(parts[1] == "w");
+	}
+	if (parts.size() > 2) {
+		m_state.setCastleRightsFromFen(parts[2]);
+	}
+	if (parts.size() > 3 && parts[3] != "-") {
+		m_state.setEnpassantSquare(Engine::squareToIndex(parts[3]));
+	} else {
+		m_state.setEnpassantSquare(no_sqr);
+	}
+	// Ignoring halfmove (parts[4]) and fullmove (parts[5]) for now as engine doesn't use them.
 }
+
+// Helper to convert square index to algebraic notation like "e2", "h8"
+// This must match the logic of squareToIndex: index = (7-rank)*8 + file
+std::string indexToSquareString(std::size_t index) {
+    if (index == no_sqr) return "-";
+    std::size_t rank_from_bottom = index / 8; // 0 for 1st rank (a1-h1), 7 for 8th rank (a8-h8)
+                                          // This is if a1=0. Engine uses a8=0.
+                                          // Engine's internal indexing: (7-rank)*RANK_MAX + file where rank is 0-7 (1-8)
+                                          // So, if index = (7-rank_char_val)*8 + file_char_val
+    std::size_t internal_rank = index / 8; // This is 0 for '8' row, 7 for '1' row
+    std::size_t file = index % 8;        // 0 for 'a', 7 for 'h'
+    char file_char = 'a' + static_cast<char>(file);
+    char rank_char = '8' - static_cast<char>(internal_rank);
+    std::string s;
+    s += file_char;
+    s += rank_char;
+    return s;
+}
+
+// Implementation of new methods
+std::string Engine::getFEN() const {
+    std::string fen = "";
+    // 1. Piece placement
+    for (std::size_t r = 0; r < RANK_MAX; ++r) { // Iterates 0 to 7, representing ranks 8 down to 1
+        int empty_squares = 0;
+        for (std::size_t f = 0; f < FILE_MAX; ++f) { // Iterates 0 to 7, files a to h
+            std::size_t square_idx = r * RANK_MAX + f;
+            Piece p = m_state.testPieceType(square_idx);
+            if (p == Piece::EMPTY) {
+                empty_squares++;
+            } else {
+                if (empty_squares > 0) {
+                    fen += std::to_string(empty_squares);
+                    empty_squares = 0;
+                }
+                fen += piece_to_char_fen[static_cast<int>(p)];
+            }
+        }
+        if (empty_squares > 0) {
+            fen += std::to_string(empty_squares);
+        }
+        if (r < RANK_MAX - 1) {
+            fen += '/';
+        }
+    }
+
+    // 2. Active color
+    fen += m_state.whiteToMove() ? " w" : " b";
+
+    // 3. Castling availability
+    std::string castle_str = "";
+    if (m_state.testCastleRights(Castle::WK)) castle_str += 'K';
+    if (m_state.testCastleRights(Castle::WQ)) castle_str += 'Q';
+    if (m_state.testCastleRights(Castle::BK)) castle_str += 'k';
+    if (m_state.testCastleRights(Castle::BQ)) castle_str += 'q';
+    fen += " " + (castle_str.empty() ? "-" : castle_str);
+
+    // 4. En passant target square
+    fen += " " + indexToSquareString(m_state.enpassantSquare());
+
+    // 5. Halfmove clock (engine doesn't track, use 0)
+    fen += " 0";
+    // 6. Fullmove number (engine doesn't track, use 1)
+    fen += " 1";
+
+    return fen;
+}
+
+bool Engine::parseMoveString(const std::string& moveStr, Move& outMove) {
+    MoveList legal_moves;
+    m_moveGen.generateMoves(m_state, legal_moves); // Generate legal moves for current state
+
+    // Handle castling first
+    if (moveStr == "wk" || moveStr == "e1g1") { // Assuming WK
+        if (m_state.whiteToMove() && m_state.testCastleRights(Castle::WK)) {
+             if (legal_moves.findCastleMove(g1, outMove)) return true; // Use specific target for castle
+        }
+    } else if (moveStr == "wq" || moveStr == "e1c1") { // Assuming WQ
+         if (m_state.whiteToMove() && m_state.testCastleRights(Castle::WQ)) {
+            if (legal_moves.findCastleMove(c1, outMove)) return true;
+        }
+    } else if (moveStr == "bk" || moveStr == "e8g8") { // Assuming BK
+        if (!m_state.whiteToMove() && m_state.testCastleRights(Castle::BK)) {
+            if (legal_moves.findCastleMove(g8, outMove)) return true;
+        }
+    } else if (moveStr == "bq" || moveStr == "e8c8") { // Assuming BQ
+        if (!m_state.whiteToMove() && m_state.testCastleRights(Castle::BQ)) {
+            if (legal_moves.findCastleMove(c8, outMove)) return true;
+        }
+    }
+
+    // Standard moves (e.g., "e2e4", "e7e8q")
+    if (moveStr.length() >= 4 && moveStr.length() <= 5) {
+        std::string source_str = moveStr.substr(0, 2);
+        std::string target_str = moveStr.substr(2, 2);
+        std::size_t source_sq = Engine::squareToIndex(source_str);
+        std::size_t target_sq = Engine::squareToIndex(target_str);
+
+        Piece promotion_piece_type = Piece::EMPTY;
+        if (moveStr.length() == 5) {
+            char prom_char = moveStr[4];
+            if (m_state.whiteToMove()) {
+                if (prom_char == 'q') promotion_piece_type = Piece::QUEEN;
+                else if (prom_char == 'r') promotion_piece_type = Piece::ROOK;
+                else if (prom_char == 'b') promotion_piece_type = Piece::BISHOP;
+                else if (prom_char == 'n') promotion_piece_type = Piece::KNIGHT;
+            } else {
+                if (prom_char == 'q') promotion_piece_type = Piece::BQUEEN;
+                else if (prom_char == 'r') promotion_piece_type = Piece::BROOK;
+                else if (prom_char == 'b') promotion_piece_type = Piece::BBISHOP;
+                else if (prom_char == 'n') promotion_piece_type = Piece::BKNIGHT;
+            }
+        }
+
+        for (const auto& legal_move : legal_moves.moves()) {
+            if (legal_move.source() == source_sq && legal_move.target() == target_sq) {
+                if (legal_move.promoted()) {
+                    if (legal_move.piece() == promotion_piece_type) { // piece() stores promoted piece type
+                        outMove = legal_move;
+                        return true;
+                    }
+                } else {
+                    if (moveStr.length() == 4) { // Not a promotion
+                        outMove = legal_move;
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+    return false; // Move string doesn't match any legal move
+}
+
+
+std::string Engine::moveToString(const Move& move) const {
+    if (move.castle()) {
+        // Determine type of castle by target square (already encoded in move's source by current convention)
+        // or by the original king position and target.
+        // For simplicity, let's use the standard castle notation if possible.
+        // The `Move` object for castle stores the *target* square of the KING in `source()` by current convention in `inputAndParseMove`
+        // e.g. `Move::createCastleMove<Castle::WK>()` returns `Move(g1)`
+        std::size_t king_target_sq = move.source(); // This is unconventional, source() usually means source.
+                                                   // Let's assume move.target() is the king's target for castles for now.
+                                                   // Re-evaluating Move::Move(target) constructor. It sets m_data = target | castle_flag
+                                                   // So move.source() would be (target | castle_flag) & source_mask which is target if target < 64
+
+        // A better way: check target square of the king.
+        // Standard castle notation is what we want, e.g. "e1g1" for white kingside.
+        // The `Move` object itself doesn't explicitly store "wk", "wq" etc.
+        // It stores king's source and target. Let's use that.
+        Piece pieceMoved = move.piece(); // This should be KING or BKING for castles if encoded that way
+                                         // The current Move constructor for castle Move(target_sq) does not set piece.
+                                         // The Move::print() also has complex logic.
+        // Let's try to reconstruct based on known castle target squares.
+        // The `move.source()` for a castle move created by `Move(target_square_of_king)` is indeed that target square.
+        // Let's try to get the actual source/target from the move object.
+        // For now, let's stick to simple source-target notation.
+        // The `Move` struct needs to be more explicit about king's source/target for castles.
+        // Given the current `Move::print`, it also prints source/target.
+
+        // If `Move` has source and target correctly set for castles (e.g. e1g1)
+        // this will work. The current `Move(target_sq_for_castle)` is problematic.
+        // Let's assume `move.source()` and `move.target()` are the actual start/end squares of the piece moved.
+        // For castling, `inputAndParseMove` creates `Move::createCastleMove<Castle::WK>()` which is `Move(g1)`.
+        // This `Move(std::size_t target)` constructor sets:
+        // m_data = target | (1 << castle_shift) | (value << value_shift);
+        // So `move.source()` would be `(m_data & source_mask)` which is `target & source_mask`.
+        // And `move.target()` would be `((m_data & target_mask) >> target_shift)` which is 0. This is not good.
+
+        // Let's try to deduce castle type from the target square stored in move.source()
+        // (as per current `Move::createCastleMove` and `Engine::inputAndParseMove` behavior)
+        std::size_t king_final_sq = move.source(); // This is where the king lands.
+        if (king_final_sq == g1) return "e1g1"; // White Kingside (conventionally O-O)
+        if (king_final_sq == c1) return "e1c1"; // White Queenside (O-O-O)
+        if (king_final_sq == g8) return "e8g8"; // Black Kingside
+        if (king_final_sq == c8) return "e8c8"; // Black Queenside
+        // Fallback if somehow it's a castle move but not one of these targets
+        return indexToSquareString(move.source()) + indexToSquareString(move.target());
+
+    }
+
+    std::string str = indexToSquareString(move.source()) + indexToSquareString(move.target());
+    if (move.promoted()) {
+        Piece p = move.piece(); // This is the promoted piece type
+        // Convert piece type to its character representation (lowercase for black, uppercase for white)
+        // For promotion, standard is lowercase char for the piece type (q, r, b, n)
+        if (p == QUEEN || p == BQUEEN) str += 'q';
+        else if (p == ROOK || p == BROOK) str += 'r';
+        else if (p == BISHOP || p == BBISHOP) str += 'b';
+        else if (p == KNIGHT || p == BKNIGHT) str += 'n';
+    }
+    return str;
+}
+
+
+Move Engine::getBestMoveFinal() const {
+    return m_bestMoveFinal;
+}
+
+void Engine::calculateBestMove(std::uint32_t search_depth) {
+    m_depth = search_depth; // Set the search depth for minimax
+
+    // iterativeMinimax already uses m_state, m_depth and updates m_bestMoveFinal
+    // It also handles time limits.
+    // We need to ensure m_state is correctly set (side to move, etc.) before calling this.
+    iterativeMinimax(m_state);
+}
+
+bool Engine::isWhiteToMove() const {
+    return m_state.whiteToMove();
+}
+
+State& Engine::getCurrentState() {
+    return m_state;
+}
+
 
 int Engine::evaluate(const State& state)
 {
