@@ -84,7 +84,13 @@ constexpr std::array<std::size_t, 128> create_char_to_piece()
 }
 constexpr std::array<std::size_t, 128> char_to_piece = create_char_to_piece();
 
-constexpr std::array<char, PIECE_COUNT> piece_to_char = { 'P', 'N', 'B', 'R', 'Q', 'K', 'X', 'n', 'b', 'r', 'q', 'k' };
+constexpr std::array<char, PIECE_COUNT> piece_to_char = { 'P', 'N', 'B', 'R', 'Q', 'K', 'X', 'n', 'b', 'r', 'q', 'k' }; // For board display
+constexpr std::array<char, PIECE_COUNT + 1> piece_to_char_fen = {
+	'P', 'N', 'B', 'R', 'Q', 'K',
+	'p', 'n', 'b', 'r', 'q', 'k',
+	'.' // For NO_PIECE or empty
+};
+
 
 constexpr std::array<std::string_view, 64> index_to_rf = {
 		"a8"sv, "b8"sv, "c8"sv, "d8"sv, "e8"sv, "f8"sv, "g8"sv, "h8"sv,

@@ -116,10 +116,114 @@ of that game I can't seem to. I think there is something wrong with castling bec
 
 #include "Engine.h"
 #include "ChessConstants.hpp"
+#include <iostream>
+#include <string>
+#include <sstream>
+#include <vector> // Required for splitting string
+
+// Helper function to split a string by a delimiter
+std::vector<std::string> split(const std::string& s, char delimiter) {
+    std::vector<std::string> tokens;
+    std::string token;
+    std::istringstream tokenStream(s);
+    while (std::getline(tokenStream, token, delimiter)) {
+        tokens.push_back(token);
+    }
+    return tokens;
+}
 
 int main()
 {
-	//Engine engine{ start_position_fen };
-	Engine engine{ "rnbqkbnr/pppppppp/8/P7/8/8/PPPPPPPP/RNBQKBNR" };
-	engine.step(false, false, 8); 
+    Engine engine; // Create one engine instance
+
+    // Set output to line buffered if possible, or disable buffering for stdout
+    // This helps ensure the Go process receives data promptly.
+    std::cout.setf(std::ios::unitbuf);
+    // Alternatively, for more immediate flushing:
+    // setvbuf(stdout, NULL, _IONBF, 0);
+
+
+    std::string line;
+    while (std::getline(std::cin, line))
+    {
+        std::vector<std::string> tokens = split(line, ' ');
+        if (tokens.empty()) {
+            continue;
+        }
+
+        std::string command = tokens[0];
+
+        if (command == "QUIT") {
+            // std::cerr << "INFO: Quitting." << std::endl; // Optional: log to stderr
+            break;
+        } else if (command == "NEW_GAME") {
+            std::string fen = start_position_fen; // Default FEN
+            if (tokens.size() > 1) {
+                fen = tokens[1];
+            }
+            engine.setState(fen);
+            std::cout << "FEN: " << engine.getFEN() << std::endl;
+            std::cerr << "INFO: NEW_GAME processed. FEN set to: " << fen << std::endl;
+        } else if (command == "MAKE_MOVE") {
+            if (tokens.size() < 3) {
+                std::cout << "ERROR: Not enough arguments for MAKE_MOVE. Expected FEN and MOVE." << std::endl;
+                std::cerr << "ERROR: Not enough arguments for MAKE_MOVE. Expected FEN and MOVE." << std::endl;
+                continue;
+            }
+            std::string current_fen = tokens[1];
+            std::string move_string = tokens[2];
+
+            engine.setState(current_fen);
+
+            Move parsed_move;
+            if (engine.parseMoveString(move_string, parsed_move)) {
+                State& current_engine_state = engine.getCurrentState(); // Get current state from engine
+                if (engine.makeMove(parsed_move, current_engine_state)) { // Make move on that state
+                    current_engine_state.flipSide(); // makeMove doesn't flip side, but game logic implies it should
+                    std::cout << "FEN: " << engine.getFEN() << std::endl;
+                    std::cerr << "INFO: MAKE_MOVE processed. Move: " << move_string << ". New FEN: " << engine.getFEN() << std::endl;
+                } else {
+                    std::cout << "ERROR: Invalid move (rejected by makeMove)." << std::endl;
+                    std::cerr << "ERROR: Invalid move (rejected by makeMove) for " << move_string << " on FEN " << current_fen << std::endl;
+                }
+            } else {
+                std::cout << "ERROR: Could not parse or validate move string." << std::endl;
+                std::cerr << "ERROR: Could not parse or validate move string: " << move_string << " on FEN " << current_fen << std::endl;
+            }
+        } else if (command == "GET_ENGINE_MOVE") {
+            if (tokens.size() < 2) {
+                std::cout << "ERROR: Not enough arguments for GET_ENGINE_MOVE. Expected FEN." << std::endl;
+                std::cerr << "ERROR: Not enough arguments for GET_ENGINE_MOVE. Expected FEN." << std::endl;
+                continue;
+            }
+            std::string current_fen = tokens[1];
+            // Optional: depth from command `tokens[2]`
+            std::uint32_t depth = 8; // Default depth
+
+            engine.setState(current_fen);
+
+            // TODO: Determine side to move from FEN or engine state
+            // bool engine_is_white = engine.isWhiteToMove();
+            bool engine_is_white = true; // Placeholder
+
+            // The existing engine.step() is interactive and complex.
+            // We need a streamlined way to just get the best move.
+            // This might involve refactoring engine.step() or calling parts of its logic.
+            // For now, let's assume iterativeMinimax updates a best move that we can retrieve.
+            // engine.iterativeMinimax(engine.m_state); // m_state is private, needs refactor or public getter
+            // Move best_engine_move = engine.getBestMoveFinal(); // Need getBestMoveFinal()
+            // std::string move_str = engine.moveToString(best_engine_move); // Need moveToString()
+            // engine.makeMove(best_engine_move, engine.m_state); // Make the move on engine's internal state
+
+            // std::cout << "MOVE: " << move_str << " FEN: " << engine.getFEN() << std::endl;
+            std::cout << "MOVE: e7e5 FEN: " << "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2" << std::endl; // Placeholder
+            std::cerr << "INFO: GET_ENGINE_MOVE (placeholder) processed for FEN: " << current_fen << std::endl;
+
+        } else {
+            std::cout << "ERROR: Unknown command: " << command << std::endl;
+            std::cerr << "ERROR: Unknown command: " << command << std::endl;
+        }
+    }
+
+    return 0;
 }

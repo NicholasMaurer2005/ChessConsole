@@ -264,3 +264,19 @@ std::array<std::string, RANK_MAX> State::split_fen(std::string_view fen)
 	return split_fen;
 }
 
+void State::setWhiteToMove(bool is_white) {
+	m_whiteToMove = is_white;
+}
+
+void State::setCastleRightsFromFen(std::string_view fen_castle_str) {
+	m_castleRights = 0; // Reset all rights first
+	if (fen_castle_str == "-") {
+		return;
+	}
+	for (char c : fen_castle_str) {
+		if (c == 'K') m_castleRights |= Castle::WK;
+		else if (c == 'Q') m_castleRights |= Castle::WQ;
+		else if (c == 'k') m_castleRights |= Castle::BK;
+		else if (c == 'q') m_castleRights |= Castle::BQ;
+	}
+}

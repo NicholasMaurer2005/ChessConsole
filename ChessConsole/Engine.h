@@ -53,11 +53,30 @@ public:
 
 	void printAllBoardAttacks(Color C) const;
 
-	bool inputAndParseMove(MoveList& list, Move& move);
+	bool inputAndParseMove(MoveList& list, Move& move); // Will likely need to adapt or supplement this
+
+	// New methods for command-based interaction
+	std::string getFEN() const;
+	bool parseMoveString(const std::string& moveStr, Move& outMove); // Non-interactive move parsing
+	std::string moveToString(const Move& move) const;
+	Move getBestMoveFinal() const;
+	void calculateBestMove(std::uint32_t depth); // Streamlined calculation
+	bool isWhiteToMove() const; // To get current turn from state
+
 
 	static std::size_t squareToIndex(std::string_view square);
 
-	bool makeMove(const Move move, State& state) const;
+	bool makeMove(const Move move, State& state); // Make this public if not already, or provide a wrapper
+	// bool makeMove(const Move move); // Simpler public interface if m_state is consistently used
 
 	bool kingInCheck(const State& state) const;
+
+	// Allow Main.cpp to access m_state for iterativeMinimax and makeMove if needed,
+	// or provide more public methods to wrap these operations.
+	// For now, let's assume we'll add specific public methods.
+	friend class Main; // Not ideal, but for quick access to m_state if necessary.
+					   // Prefer dedicated methods like `makeMoveOnCurrentState(const Move& move)`
+                       // and `calculateBestMoveOnCurrentState(std::uint32_t depth)`
+public: // Ensure m_state is accessible or provide getters/wrappers
+    State& getCurrentState(); // To allow makeMove and iterativeMinimax to operate on the engine's state
 };

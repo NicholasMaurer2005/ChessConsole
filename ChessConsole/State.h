@@ -56,7 +56,12 @@ public:
 
 	void moveCapture(const Piece P, const std::size_t source, const std::size_t target);
 
-	static State parse_fen(const std::string_view fen);
+	static State parse_fen(const std::string_view fen); // Parses only piece positions
 
-	static std::array<std::string, RANK_MAX> split_fen(std::string_view fen);
+	// Methods for FEN parsing enhancements
+	void setWhiteToMove(bool is_white);
+	void setCastleRightsFromFen(std::string_view fen_castle_str);
+	// void setEnpassantSquare(std::size_t sq_idx); // Already exists
+
+	static std::array<std::string, RANK_MAX> split_fen(std::string_view fen); // Ensure this is public or callable by Engine
 };
