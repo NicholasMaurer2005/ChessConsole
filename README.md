@@ -1,4 +1,4 @@
-
+Thank you for checking out my chess engine! Thank you to The Cherno for reviewing it! I was super proud of this project, but I have left it for my new project, CChess (stands for console chess). This new engine is better in almost every way! The C++ code is more organized and more readable. The algorithms are way more efficient, especially the MoveGen::generateMoves(). It also has a GUI! And a static library with a C-style interface, so it can be used in both C and C++, as well as other languages (with some effort). 
 
 
 
